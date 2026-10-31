@@ -130,6 +130,33 @@ func TestCriticalJobPersistenceAndUncertainOutcome(t *testing.T) {
 	if strings.Contains(string(b), "fixture-session") {
 		t.Fatal("session leaked into job")
 	}
+	// Retain Finished evidence after task dismissal; neither a future unknown
+	// state nor 100% progress alone establishes success.
+	finished := 4
+	jobs, e = readJobs()
+	if e != nil {
+		t.Fatal(e)
+	}
+	got = jobs[j.ID]
+	got.RemoteState = &finished
+	if e = saveJob(got); e != nil {
+		t.Fatal(e)
+	}
+	jobs, _ = readJobs()
+	got, e = a.refreshJob(context.Background(), jobs[j.ID])
+	if e != nil || got.State != "succeeded" || taskStateName(finished) != "Finished" {
+		t.Fatalf("persisted Finished task was not reconciled: %+v, %v", got, e)
+	}
+	for _, tt := range []struct {
+		code  int
+		state string
+	}{{0, "running"}, {1, "submitted"}, {2, "submitted"}, {3, "failed"}, {4, "succeeded"}, {5, "running"}, {6, "failed"}, {7, "unknown"}, {100, "unknown"}, {254, "failed"}, {12345, "unknown"}} {
+		observed := Job{}
+		observeTask(&observed, map[string]any{"State": float64(tt.code), "ProgressPercent": float64(100)})
+		if observed.State != tt.state {
+			t.Fatalf("task %d: got %s, want %s", tt.code, observed.State, tt.state)
+		}
+	}
 }
 
 func TestCriticalSecretRedactionAndTextChunks(t *testing.T) {

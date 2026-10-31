@@ -76,7 +76,22 @@ Mutations return a job stored beside the connection file. `amp_get_job` with `re
 
 A disappearing task is not proof of success. Reconciliation observes tasks or lifecycle state; a matching state does not prove which client caused it. A missed restart transition can leave completion uncertain.
 
-Application states, AMP task states and MCP job states are distinct. Application `20` means `Ready`; AMP task `0` means `Running` and task `3` means `Failed`. Unverified task values remain `Unknown` alongside their raw number.
+Application states, AMP task states and MCP job states are distinct. Application `20` means `Ready`. The task names below follow AMP's `TaskState` enum; future unrecognized values retain their raw number and are shown as `Unknown`.
+
+| AMP task code | Name | MCP job state |
+| --- | --- | --- |
+| `0` | `Running` | `running` |
+| `1` | `Waiting` | `submitted` |
+| `2` | `Queued` | `submitted` |
+| `3` | `Failed` | `failed` |
+| `4` | `Finished` | `succeeded` |
+| `5` | `PendingCancellation` | `running` |
+| `6` | `Cancelled` | `failed`, with cancellation noted |
+| `7` | `Acknowledged` | `unknown`; acknowledgement alone does not retain a completion result |
+| `100` | `UserActionRequired` | `unknown`; resolve the prompt in AMP |
+| `254` | `TimedOut` | `failed`; inspect the target before retrying |
+
+Reconciliation also recognizes terminal task codes saved by older releases, even after AMP dismisses those tasks. A task disappearing without a recorded terminal result, or reaching 100% progress alone, still does not establish success.
 
 ## Permissions and sessions
 

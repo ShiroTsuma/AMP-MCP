@@ -126,9 +126,33 @@ func observeTask(j *Job, task map[string]any) {
 		case 0:
 			j.State = "running"
 			j.Note = "task observed running"
+		case 1:
+			j.State = "submitted"
+			j.Note = "AMP task is waiting"
+		case 2:
+			j.State = "submitted"
+			j.Note = "AMP task is queued"
 		case 3:
 			j.State = "failed"
 			j.Note = "AMP reports task failure"
+		case 4:
+			j.State = "succeeded"
+			j.Note = "AMP reports task finished"
+		case 5:
+			j.State = "running"
+			j.Note = "AMP task cancellation is pending"
+		case 6:
+			j.State = "failed"
+			j.Note = "AMP reports task cancelled"
+		case 7:
+			j.State = "unknown"
+			j.Note = "AMP task was acknowledged; completion outcome is not established"
+		case 100:
+			j.State = "unknown"
+			j.Note = "AMP task requires user action"
+		case 254:
+			j.State = "failed"
+			j.Note = "AMP reports task timed out; inspect the target before retrying"
 		default:
 			j.State = "unknown"
 			j.Note = "remote task state is not yet mapped; inspect remote_state"
@@ -193,6 +217,15 @@ func (a *App) refreshJob(ctx context.Context, j Job) (Job, error) {
 	}
 	if j.State == "succeeded" || j.State == "failed" {
 		return j, nil
+	}
+	// Older releases retained these task codes as unknown. Reuse the recorded
+	// terminal evidence even if AMP has since dismissed the task.
+	if j.RemoteState != nil {
+		switch *j.RemoteState {
+		case 3, 4, 6, 254:
+			observeTask(&j, map[string]any{"State": float64(*j.RemoteState)})
+			return j, saveJob(j)
+		}
 	}
 	if j.TaskID != "" {
 		v, e := cl.call(ctx, j.Scope, "Core/GetTasks", map[string]any{})
@@ -359,6 +392,7 @@ func addJobTools(s *mcp.Server, a *App) {
 		if tasks, ok := v.([]any); ok {
 			for _, t := range tasks {
 				if m, ok := t.(map[string]any); ok && m["Id"] == x.ID {
+					annotateTaskState(t)
 					return result(t, nil), nil
 				}
 			}

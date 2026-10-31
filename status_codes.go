@@ -10,12 +10,30 @@ func applicationStateName(n int) string {
 	}
 	return "Unknown"
 }
+
+// Names verified from the shipped AMP 2.8 ModuleShared.dll TaskState enum.
 func taskStateName(n int) string {
 	switch n {
 	case 0:
 		return "Running"
+	case 1:
+		return "Waiting"
+	case 2:
+		return "Queued"
 	case 3:
 		return "Failed"
+	case 4:
+		return "Finished"
+	case 5:
+		return "PendingCancellation"
+	case 6:
+		return "Cancelled"
+	case 7:
+		return "Acknowledged"
+	case 100:
+		return "UserActionRequired"
+	case 254:
+		return "TimedOut"
 	}
 	return "Unknown"
 }

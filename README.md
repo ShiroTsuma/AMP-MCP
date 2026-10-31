@@ -52,7 +52,7 @@ Available operations depend on your AMP version, installed modules, license and 
    ```json
    {
      "mcpServers": {
-       "amp": {
+       "amp-mcp": {
          "command": "C:\\Tools\\AMP-MCP\\amp-mcp.exe",
          "args": ["serve"]
        }
@@ -87,7 +87,7 @@ token locally. Do not ask me to paste credentials into chat or put them in
 commands, MCP configuration or logs. Explain any required AMP-side account
 and permission steps using docs/setup.md. I will handle sign-in and MFA.
 
-Register the executable with args ["serve"] using my client's supported
+Register the server as amp-mcp with args ["serve"] using my client's supported
 configuration format. Preserve all existing servers and settings. Tell me
 if the client must reconnect before its new tools become available.
 
