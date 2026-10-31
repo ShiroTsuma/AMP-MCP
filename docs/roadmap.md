@@ -17,4 +17,3 @@ Development backlog only. Existing workflows and operational limits are document
 - [ ] Verify session termination with an AMP version supplying terminable session IDs.
 - [ ] Expand live verification of non-ASCII paths, archive/plugin failures and interrupted transfers on disposable instances.
 - [ ] Verify fresh full-admin onboarding end to end, including candidate-role authority before temporary bootstrap access is removed.
-- [ ] Verify the tag-triggered release workflow on GitHub after publication.

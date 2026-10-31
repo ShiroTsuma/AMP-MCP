@@ -46,7 +46,7 @@ Preserve ADS/application boundaries. Never send ADS credentials as native child 
 Build the same package used by CI:
 
 ```powershell
-.\scripts\package-release.ps1 -Version v0.1.0
+.\scripts\package-release.ps1 -Version v0.9.0
 ```
 
 Outputs are `dist/amp-mcp-windows-x64.zip` and `dist/SHA256SUMS`. Packaging builds a trimmed Windows x64 binary, verifies its version and uses an explicit file allowlist: executable, README, user guides and applicable license notices. Source, fixtures, development notes and configuration are excluded. The connection manager is embedded.
@@ -56,6 +56,6 @@ Outputs are `dist/amp-mcp-windows-x64.zip` and `dist/SHA256SUMS`. Packaging buil
 - **CI** runs on pushes and pull requests using Windows. It checks formatting, runs vet, Go tests and the stdio smoke check, then builds and inspects the release ZIP. ZIP and checksum are uploaded as workflow artifacts.
 - **Release** runs on pushed `v*` tags. It validates and packages before creating a GitHub release with ZIP, checksum and generated notes. A prerelease suffix marks the release as a prerelease.
 
-Commit and push reviewed source, then push a semantic version tag such as `v0.1.0` to publish. Actions must be enabled. The workflow uses the built-in `GITHUB_TOKEN` and needs no AMP credentials or personal token. Untagged CI runs do not publish.
+Commit and push reviewed source, then push a semantic version tag such as `v0.9.0` to publish. Actions must be enabled. The workflow uses the built-in `GITHUB_TOKEN` and needs no AMP credentials or personal token. Untagged CI runs do not publish.
 
 The ZIP filename is stable. Version identity comes from the tag and `amp-mcp.exe version`. Do not retag released versions. Remaining work is in the [roadmap](roadmap.md).
