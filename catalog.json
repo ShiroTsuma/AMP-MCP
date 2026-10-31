@@ -1,0 +1,3292 @@
+[
+  {
+    "name": "amp_list_instances",
+    "endpoint": "ADSModule/GetInstances",
+    "instance": false,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ForceIncludeSelf": {
+          "type": "boolean"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "ForceIncludeSelf": "ForceIncludeSelf"
+    },
+    "description": "Read list instances. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
+    "listResult": true
+  },
+  {
+    "name": "amp_get_instance",
+    "endpoint": "ADSModule/GetInstance",
+    "instance": false,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "InstanceId"
+    },
+    "description": "Read get instance. Targets ADS; instance power operations control AMP itself, not just the game."
+  },
+  {
+    "name": "amp_get_instance_status",
+    "endpoint": "ADSModule/GetInstanceStatuses",
+    "instance": false,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Read get instance status. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
+    "listResult": true
+  },
+  {
+    "name": "amp_get_application_endpoints",
+    "endpoint": "ADSModule/GetApplicationEndpoints",
+    "instance": false,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "instanceId"
+    },
+    "description": "Read get application endpoints. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
+    "listResult": true
+  },
+  {
+    "name": "amp_start_instance",
+    "endpoint": "ADSModule/StartInstance",
+    "instance": false,
+    "resolve": "InstanceName",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "InstanceName"
+    },
+    "description": "Submit start instance. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_stop_instance",
+    "endpoint": "ADSModule/StopInstance",
+    "instance": false,
+    "resolve": "InstanceName",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "InstanceName"
+    },
+    "description": "Submit stop instance. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_restart_instance",
+    "endpoint": "ADSModule/RestartInstance",
+    "instance": false,
+    "resolve": "InstanceName",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "InstanceName"
+    },
+    "description": "Submit restart instance. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_upgrade_instance",
+    "endpoint": "ADSModule/UpgradeInstance",
+    "instance": false,
+    "resolve": "InstanceName",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "InstanceName"
+    },
+    "description": "Submit upgrade instance. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_delete_instance",
+    "endpoint": "ADSModule/DeleteInstance",
+    "instance": false,
+    "resolve": "InstanceName",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "InstanceName"
+    },
+    "description": "Submit delete instance. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_list_applications",
+    "endpoint": "ADSModule/GetSupportedAppSummaries",
+    "instance": false,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Read list applications. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
+    "listResult": true
+  },
+  {
+    "name": "amp_get_provision_arguments",
+    "endpoint": "ADSModule/GetProvisionArguments",
+    "instance": false,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ModuleName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection",
+        "ModuleName"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "ModuleName": "ModuleName"
+    },
+    "description": "Read get provision arguments. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
+    "listResult": true
+  },
+  {
+    "name": "amp_list_datastores",
+    "endpoint": "ADSModule/GetDatastores",
+    "instance": false,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Read list datastores. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
+    "listResult": true
+  },
+  {
+    "name": "amp_get_datastore",
+    "endpoint": "ADSModule/GetDatastore",
+    "instance": false,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "connection",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "id": "id"
+    },
+    "description": "Read get datastore. Targets ADS; instance power operations control AMP itself, not just the game."
+  },
+  {
+    "name": "amp_move_instance_datastore",
+    "endpoint": "ADSModule/MoveInstanceDatastore",
+    "instance": false,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "datastoreId": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "datastoreId"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "instanceId",
+      "datastoreId": "datastoreId"
+    },
+    "description": "Submit move instance datastore. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_list_deployment_templates",
+    "endpoint": "ADSModule/GetDeploymentTemplates",
+    "instance": false,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Read list deployment templates. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
+    "listResult": true
+  },
+  {
+    "name": "amp_get_instance_network",
+    "endpoint": "ADSModule/GetInstanceNetworkInfo",
+    "instance": false,
+    "resolve": "InstanceName",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "InstanceName"
+    },
+    "description": "Read get instance network. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
+    "listResult": true
+  },
+  {
+    "name": "amp_get_application_status",
+    "endpoint": "Core/GetStatus",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Read get application status. Targets the application inside an AMP instance."
+  },
+  {
+    "name": "amp_get_application_info",
+    "endpoint": "Core/GetModuleInfo",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Read get application info. Targets the application inside an AMP instance."
+  },
+  {
+    "name": "amp_list_tasks",
+    "endpoint": "Core/GetTasks",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Read list tasks. Targets the application inside an AMP instance. Returns {items,next_offset,more}; use query, limit and offset to narrow results. Omit instance_id to target ADS.",
+    "listResult": true
+  },
+  {
+    "name": "amp_cancel_task",
+    "endpoint": "Core/CancelTask",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "TaskId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "TaskId"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "TaskId": "TaskId"
+    },
+    "description": "Submit cancel task. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion. Omit instance_id to target ADS."
+  },
+  {
+    "name": "amp_start_application",
+    "endpoint": "Core/Start",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Submit start application. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_stop_application",
+    "endpoint": "Core/Stop",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Submit stop application. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_restart_application",
+    "endpoint": "Core/Restart",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Submit restart application. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_kill_application",
+    "endpoint": "Core/Kill",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Submit kill application. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_update_application",
+    "endpoint": "Core/UpdateApplication",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Submit update application. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_send_console_message",
+    "endpoint": "Core/SendConsoleMessage",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "message"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "message": "message"
+    },
+    "description": "Submit send console message. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_list_settings",
+    "endpoint": "Core/GetSettingsSpec",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "section": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "List setting metadata without current values. Filter by section or query, paginate with offset and limit. Returns items,next_offset,more. Omit instance_id for ADS."
+  },
+  {
+    "name": "amp_list_schedule",
+    "endpoint": "Core/GetScheduleData",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Read list schedule. Targets the application inside an AMP instance. Omit instance_id to target ADS."
+  },
+  {
+    "name": "amp_set_trigger_enabled",
+    "endpoint": "Core/SetTriggerEnabled",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "Id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "Enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "Id",
+        "Enabled"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "Id": "Id",
+      "Enabled": "Enabled"
+    },
+    "description": "Submit set trigger enabled. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_run_trigger",
+    "endpoint": "Core/RunEventTriggerImmediately",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "triggerId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "triggerId"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "triggerId": "triggerId"
+    },
+    "description": "Submit run trigger. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_delete_schedule_task",
+    "endpoint": "Core/DeleteTask",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "TriggerID": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "TaskID": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "TriggerID",
+        "TaskID"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "TriggerID": "TriggerID",
+      "TaskID": "TaskID"
+    },
+    "description": "Submit delete schedule task. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_delete_trigger",
+    "endpoint": "Core/DeleteTrigger",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "TriggerID": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "TriggerID"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "TriggerID": "TriggerID"
+    },
+    "description": "Submit delete trigger. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_get_audit_log",
+    "endpoint": "Core/GetAuditLogEntries",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "Before": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "Count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection",
+        "Before",
+        "Count"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "Before": "Before",
+      "Count": "Count"
+    },
+    "description": "Read get audit log. Targets the application inside an AMP instance. Returns {items,next_offset,more}; use query, limit and offset to narrow results. Omit instance_id to target ADS.",
+    "listResult": true
+  },
+  {
+    "name": "amp_list_schedule_actions",
+    "endpoint": "Core/GetUserActionsSpec",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Read list schedule actions. Targets the application inside an AMP instance. Omit instance_id to target ADS."
+  },
+  {
+    "name": "amp_list_files",
+    "endpoint": "FileManagerPlugin/GetDirectoryListing",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "Dir": {
+          "type": "string"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "Dir"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "Dir": "Dir"
+    },
+    "description": "Read list files. Targets the application inside an AMP instance. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
+    "listResult": true
+  },
+  {
+    "name": "amp_read_file",
+    "endpoint": "FileManagerPlugin/ReadFileChunk",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "Filename": {
+          "type": "string",
+          "minLength": 1
+        },
+        "Offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ChunkSize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65536
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "Filename",
+        "Offset"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "Filename": "Filename",
+      "Offset": "Offset",
+      "ChunkSize": "ChunkSize"
+    },
+    "description": "Read read file. Targets the application inside an AMP instance."
+  },
+  {
+    "name": "amp_create_directory",
+    "endpoint": "FileManagerPlugin/CreateDirectory",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "NewPath": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "NewPath"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "NewPath": "NewPath"
+    },
+    "description": "Submit create directory. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_rename_file",
+    "endpoint": "FileManagerPlugin/RenameFile",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "Filename": {
+          "type": "string",
+          "minLength": 1
+        },
+        "NewFilename": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "Filename",
+        "NewFilename"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "Filename": "Filename",
+      "NewFilename": "NewFilename"
+    },
+    "description": "Submit rename file. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_rename_directory",
+    "endpoint": "FileManagerPlugin/RenameDirectory",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "oldDirectory": {
+          "type": "string",
+          "minLength": 1
+        },
+        "NewDirectoryName": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "oldDirectory",
+        "NewDirectoryName"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "oldDirectory": "oldDirectory",
+      "NewDirectoryName": "NewDirectoryName"
+    },
+    "description": "Submit rename directory. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_copy_file",
+    "endpoint": "FileManagerPlugin/CopyFile",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "Origin": {
+          "type": "string",
+          "minLength": 1
+        },
+        "TargetDirectory": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "Origin",
+        "TargetDirectory"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "Origin": "Origin",
+      "TargetDirectory": "TargetDirectory"
+    },
+    "description": "Submit copy file. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_trash_file",
+    "endpoint": "FileManagerPlugin/TrashFile",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "Filename": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "Filename"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "Filename": "Filename"
+    },
+    "description": "Submit trash file. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_trash_directory",
+    "endpoint": "FileManagerPlugin/TrashDirectory",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "DirectoryName": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "DirectoryName"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "DirectoryName": "DirectoryName"
+    },
+    "description": "Submit trash directory. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_empty_trash",
+    "endpoint": "FileManagerPlugin/EmptyTrash",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "TrashDirectoryName": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "TrashDirectoryName"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "TrashDirectoryName": "TrashDirectoryName"
+    },
+    "description": "Submit empty trash. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_create_archive",
+    "endpoint": "FileManagerPlugin/CreateArchive",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "PathToArchive": {
+          "type": "string",
+          "minLength": 1
+        },
+        "OverwriteExisting": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "PathToArchive"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "PathToArchive": "PathToArchive",
+      "OverwriteExisting": "OverwriteExisting"
+    },
+    "description": "Submit create archive. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_extract_archive",
+    "endpoint": "FileManagerPlugin/ExtractArchive",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "ArchivePath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "DestinationPath": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "ArchivePath"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "ArchivePath": "ArchivePath",
+      "DestinationPath": "DestinationPath"
+    },
+    "description": "Submit extract archive. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_list_stores",
+    "endpoint": "StorePlugin/GetAvailableStores",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "description": "Read list stores. Targets the application inside an AMP instance. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
+    "listResult": true
+  },
+  {
+    "name": "amp_search_store",
+    "endpoint": "StorePlugin/SearchStore",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "StoreName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "SearchQuery": {
+          "type": "string",
+          "minLength": 1
+        },
+        "page": {
+          "type": "integer"
+        },
+        "pageSize": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "StoreName",
+        "SearchQuery"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "StoreName": "StoreName",
+      "SearchQuery": "SearchQuery",
+      "page": "page",
+      "pageSize": "pageSize"
+    },
+    "description": "Read search store. Targets the application inside an AMP instance."
+  },
+  {
+    "name": "amp_get_store_entry",
+    "endpoint": "StorePlugin/GetStoreEntry",
+    "instance": true,
+    "resolve": "",
+    "readOnly": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "StoreName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "EntryId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "StoreName",
+        "EntryId"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "StoreName": "StoreName",
+      "EntryId": "EntryId"
+    },
+    "description": "Read get store entry. Targets the application inside an AMP instance."
+  },
+  {
+    "name": "amp_install_store_entry",
+    "endpoint": "StorePlugin/InstallStoreEntry",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "StoreName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "EntryId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "StoreName",
+        "EntryId"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "StoreName": "StoreName",
+      "EntryId": "EntryId"
+    },
+    "description": "Submit install store entry. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_update_store_entry",
+    "endpoint": "StorePlugin/UpdateStoreEntry",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "StoreName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "EntryId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "StoreName",
+        "EntryId"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "StoreName": "StoreName",
+      "EntryId": "EntryId"
+    },
+    "description": "Submit update store entry. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_uninstall_store_entry",
+    "endpoint": "StorePlugin/UninstallStoreEntry",
+    "instance": true,
+    "resolve": "",
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "StoreName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "EntryId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "StoreName",
+        "EntryId"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "StoreName": "StoreName",
+      "EntryId": "EntryId"
+    },
+    "description": "Submit uninstall store entry. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+  },
+  {
+    "name": "amp_list_users",
+    "endpoint": "Core/GetAMPUsersSummary",
+    "instance": true,
+    "readOnly": true,
+    "listResult": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "List users. Omit instance_id to target ADS. "
+  },
+  {
+    "name": "amp_get_user",
+    "endpoint": "Core/GetAMPUserInfo",
+    "instance": true,
+    "readOnly": true,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "username": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "username"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "username": "Username"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Get user. Omit instance_id to target ADS. "
+  },
+  {
+    "name": "amp_create_user",
+    "endpoint": "Core/CreateUser",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "username": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "username"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "username": "Username"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Create user. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_update_user",
+    "endpoint": "Core/UpdateUserInfo",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "username": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "password_expires": {
+          "type": "boolean"
+        },
+        "cannot_change_password": {
+          "type": "boolean"
+        },
+        "must_change_password": {
+          "type": "boolean"
+        },
+        "email_address": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "username",
+        "disabled",
+        "password_expires",
+        "cannot_change_password",
+        "must_change_password"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "username": "Username",
+      "disabled": "Disabled",
+      "password_expires": "PasswordExpires",
+      "cannot_change_password": "CannotChangePassword",
+      "must_change_password": "MustChangePassword",
+      "email_address": "EmailAddress"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Update user. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_delete_user",
+    "endpoint": "Core/DeleteUser",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "username": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "username"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "username": "Username"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Delete user. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_list_roles",
+    "endpoint": "Core/GetRoleData",
+    "instance": true,
+    "readOnly": true,
+    "listResult": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {},
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "List roles. Omit instance_id to target ADS. "
+  },
+  {
+    "name": "amp_get_role_permissions",
+    "endpoint": "Core/GetAMPRolePermissions",
+    "instance": true,
+    "readOnly": true,
+    "listResult": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "role_id": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection",
+        "role_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "role_id": "RoleId"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Get role permissions. Omit instance_id to target ADS. "
+  },
+  {
+    "name": "amp_create_role",
+    "endpoint": "Core/CreateRole",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "as_common_role": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "connection",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "name": "Name",
+      "as_common_role": "AsCommonRole"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Create role. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_rename_role",
+    "endpoint": "Core/RenameRole",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "role_id": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "new_name": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "role_id",
+        "new_name"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "role_id": "RoleId",
+      "new_name": "NewName"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Rename role. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_delete_role",
+    "endpoint": "Core/DeleteRole",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "role_id": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        }
+      },
+      "required": [
+        "connection",
+        "role_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "role_id": "RoleId"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Delete role. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_set_role_permission",
+    "endpoint": "Core/SetAMPRolePermission",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "role_id": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "permission_node": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "connection",
+        "role_id",
+        "permission_node",
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "role_id": "RoleId",
+      "permission_node": "PermissionNode",
+      "enabled": "Enabled"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Set role permission. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_set_user_role",
+    "endpoint": "Core/SetAMPUserRoleMembership",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "user_id": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "role_id": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "is_member": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "connection",
+        "user_id",
+        "role_id",
+        "is_member"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "user_id": "UserId",
+      "role_id": "RoleId",
+      "is_member": "IsMember"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Set user role. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_create_interval_trigger",
+    "endpoint": "Core/AddIntervalTrigger",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "months": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 366
+        },
+        "days": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 366
+        },
+        "hours": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 366
+        },
+        "minutes": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 366
+        },
+        "days_of_month": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 366
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "months",
+        "days",
+        "hours",
+        "minutes",
+        "days_of_month",
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "months": "months",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "minutes",
+      "days_of_month": "daysOfMonth",
+      "description": "description"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Create interval trigger. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_edit_interval_trigger",
+    "endpoint": "Core/EditIntervalTrigger",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "months": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 366
+        },
+        "days": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 366
+        },
+        "hours": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 366
+        },
+        "minutes": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 366
+        },
+        "days_of_month": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 366
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "id",
+        "months",
+        "days",
+        "hours",
+        "minutes",
+        "days_of_month",
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "id": "Id",
+      "months": "months",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "minutes",
+      "days_of_month": "daysOfMonth",
+      "description": "description"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Edit interval trigger. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_add_schedule_task",
+    "endpoint": "Core/AddTask",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "triggerid": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "methodid": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "parameter_mapping": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "maxProperties": 100
+        }
+      },
+      "required": [
+        "connection",
+        "triggerid",
+        "methodid",
+        "parameter_mapping"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "triggerid": "TriggerID",
+      "methodid": "MethodID",
+      "parameter_mapping": "ParameterMapping"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Add schedule task. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_edit_schedule_task",
+    "endpoint": "Core/EditTask",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "triggerid": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "taskid": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "parameter_mapping": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "maxProperties": 100
+        }
+      },
+      "required": [
+        "connection",
+        "triggerid",
+        "taskid",
+        "parameter_mapping"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "triggerid": "TriggerID",
+      "taskid": "TaskID",
+      "parameter_mapping": "ParameterMapping"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Edit schedule task. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_create_instance",
+    "endpoint": "ADSModule/CreateInstanceFromSpec",
+    "instance": false,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "spec_id": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "targetads_instance": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "friendly_name": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "post_create": {
+          "type": "string",
+          "enum": [
+            "DoNothing",
+            "UpdateOnce",
+            "UpdateAlways",
+            "UpdateAndStartOnce",
+            "UpdateAndStartAlways",
+            "StartAlways"
+          ]
+        },
+        "start_on_boot": {
+          "type": "boolean"
+        },
+        "target_datastore": {
+          "type": "integer"
+        },
+        "group": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "spec_id",
+        "targetads_instance",
+        "friendly_name"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "spec_id": "SpecId",
+      "targetads_instance": "TargetADSInstance",
+      "friendly_name": "FriendlyName",
+      "post_create": "PostCreate",
+      "start_on_boot": "StartOnBoot",
+      "target_datastore": "TargetDatastore",
+      "group": "Group"
+    },
+    "enumArguments": {
+      "post_create": {
+        "DoNothing": 0,
+        "UpdateOnce": 1,
+        "UpdateAlways": 2,
+        "UpdateAndStartOnce": 3,
+        "UpdateAndStartAlways": 4,
+        "StartAlways": 5
+      }
+    },
+    "constantArguments": {
+      "PostCreate": 0
+    },
+    "description": "Create instance. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_clone_instance",
+    "endpoint": "ADSModule/CloneInstance",
+    "instance": false,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "targetads_instance": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "new_friendly_name": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "post_create": {
+          "type": "string",
+          "enum": [
+            "DoNothing",
+            "UpdateOnce",
+            "UpdateAlways",
+            "UpdateAndStartOnce",
+            "UpdateAndStartAlways",
+            "StartAlways"
+          ]
+        },
+        "start_on_boot": {
+          "type": "boolean"
+        },
+        "target_datastore": {
+          "type": "integer"
+        },
+        "copy_files": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "targetads_instance"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "SourceInstanceId",
+      "targetads_instance": "TargetADSInstance",
+      "new_friendly_name": "NewFriendlyName",
+      "post_create": "PostCreate",
+      "start_on_boot": "StartOnBoot",
+      "target_datastore": "TargetDatastore",
+      "copy_files": "CopyFiles"
+    },
+    "enumArguments": {
+      "post_create": {
+        "DoNothing": 0,
+        "UpdateOnce": 1,
+        "UpdateAlways": 2,
+        "UpdateAndStartOnce": 3,
+        "UpdateAndStartAlways": 4,
+        "StartAlways": 5
+      }
+    },
+    "constantArguments": {
+      "DeleteSource": false,
+      "PostCreate": 0,
+      "CopyFiles": true
+    },
+    "description": "Clone instance. Changes AMP data. Returns a tracked job; submission is not completion. Never deletes the source instance. "
+  },
+  {
+    "name": "amp_update_instance_info",
+    "endpoint": "ADSModule/UpdateInstanceInfo",
+    "instance": false,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "friendly_name": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "start_on_boot": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "display_group": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "InstanceId",
+      "friendly_name": "FriendlyName",
+      "description": "Description",
+      "start_on_boot": "StartOnBoot",
+      "display_group": "DisplayGroup"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Update instance info. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_create_deployment_template",
+    "endpoint": "ADSModule/CreateDeploymentTemplate",
+    "instance": false,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "name": "Name"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Create deployment template. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_clone_deployment_template",
+    "endpoint": "ADSModule/CloneTemplate",
+    "instance": false,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "integer"
+        },
+        "new_name": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "id",
+        "new_name"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "id": "Id",
+      "new_name": "NewName"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Clone deployment template. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_apply_deployment_template",
+    "endpoint": "ADSModule/ApplyTemplate",
+    "instance": false,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "templateid": {
+          "type": "integer"
+        },
+        "new_friendly_name": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "restart_if_previously_running": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "templateid"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "InstanceID",
+      "templateid": "TemplateID",
+      "new_friendly_name": "NewFriendlyName",
+      "restart_if_previously_running": "RestartIfPreviouslyRunning"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Apply deployment template. Changes AMP data. Returns a tracked job; submission is not completion. Only templates without secret provisioning inputs are supported. "
+  },
+  {
+    "name": "amp_deploy_template",
+    "endpoint": "ADSModule/DeployTemplate",
+    "instance": false,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "templateid": {
+          "type": "integer"
+        },
+        "required_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 366
+        },
+        "tag": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "friendly_name": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "post_create": {
+          "type": "string",
+          "enum": [
+            "DoNothing",
+            "UpdateOnce",
+            "UpdateAlways",
+            "UpdateAndStartOnce",
+            "UpdateAndStartAlways",
+            "StartAlways"
+          ]
+        }
+      },
+      "required": [
+        "connection",
+        "templateid"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "templateid": "TemplateID",
+      "required_tags": "RequiredTags",
+      "tag": "Tag",
+      "friendly_name": "FriendlyName",
+      "post_create": "PostCreate"
+    },
+    "enumArguments": {
+      "post_create": {
+        "DoNothing": 0,
+        "UpdateOnce": 1,
+        "UpdateAlways": 2,
+        "UpdateAndStartOnce": 3,
+        "UpdateAndStartAlways": 4,
+        "StartAlways": 5
+      }
+    },
+    "constantArguments": {
+      "PostCreate": 0
+    },
+    "description": "Deploy template. Changes AMP data. Returns a tracked job; submission is not completion. Only templates without secret provisioning inputs are supported. "
+  },
+  {
+    "name": "amp_get_datastore_instances",
+    "endpoint": "ADSModule/GetDatastoreInstances",
+    "instance": false,
+    "readOnly": true,
+    "listResult": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "datastore_id": {
+          "type": "integer"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "connection",
+        "datastore_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "datastore_id": "datastoreId"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Get datastore instances. "
+  },
+  {
+    "name": "amp_trigger_webhook",
+    "endpoint": "WebhookPlugin/TriggerWebhookEvent",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "payload": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "data": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "payload": "payload",
+      "data": "data"
+    },
+    "enumArguments": {},
+    "constantArguments": {},
+    "description": "Trigger webhook. Changes AMP data. Returns a tracked job; submission is not completion. "
+  },
+  {
+    "name": "amp_get_settings",
+    "endpoint": "Core/GetConfigs",
+    "instance": true,
+    "readOnly": true,
+    "listResult": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "minItems": 1,
+          "maxItems": 50
+        }
+      },
+      "required": [
+        "connection",
+        "nodes"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "nodes": "nodes"
+    },
+    "description": "Read selected setting values with secrets redacted."
+  },
+  {
+    "name": "amp_set_setting",
+    "endpoint": "Core/SetConfig",
+    "instance": true,
+    "readOnly": false,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "node": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "value": {
+          "type": "string",
+          "maxLength": 65536
+        }
+      },
+      "required": [
+        "connection",
+        "node",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "node": "node",
+      "value": "value"
+    },
+    "description": "Change one non-secret, writable AMP setting. Does not restart the application; returns a tracked submission. Secret settings must be changed in the AMP panel."
+  },
+  {
+    "name": "amp_list_setting_values",
+    "endpoint": "Core/GetSettingValues",
+    "instance": true,
+    "readOnly": true,
+    "listResult": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "node": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "refresh": {
+          "type": "boolean",
+          "description": "Refresh the setting value source, for example available Fabric or loader versions."
+        }
+      },
+      "required": [
+        "connection",
+        "node"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "node": "SettingNode",
+      "refresh": "WithRefresh"
+    },
+    "description": "List available values for a non-secret setting in the selected instance. Set refresh=true to refresh deferred version/loader choices. Omit instance_id for ADS."
+  },
+  {
+    "name": "amp_set_instance_network",
+    "endpoint": "ADSModule/SetInstanceNetworkInfo",
+    "instance": false,
+    "readOnly": false,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instance_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F-]{36}$"
+        },
+        "port_mappings": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535
+          },
+          "maxProperties": 100
+        },
+        "application_ip": {
+          "type": "string"
+        },
+        "allow_stop": {
+          "type": "boolean"
+        },
+        "advertised_address": {
+          "type": "string"
+        },
+        "advertised_address_includes_port": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "connection",
+        "instance_id",
+        "port_mappings"
+      ],
+      "additionalProperties": false
+    },
+    "arguments": {
+      "instance_id": "InstanceId",
+      "port_mappings": "PortMappings",
+      "application_ip": "ApplicationIP",
+      "allow_stop": "mustStop",
+      "advertised_address": "AdvertisedAddress",
+      "advertised_address_includes_port": "AdvertisedAddressIncludesPort"
+    },
+    "constantArguments": {
+      "mustStop": false
+    },
+    "description": "Change instance port mappings and advertised address. Discover mapping names with amp_get_instance_network. By default AMP is not permitted to stop the instance; explicitly set allow_stop to true if stopping is intended. Returns a tracked submission."
+  }
+]

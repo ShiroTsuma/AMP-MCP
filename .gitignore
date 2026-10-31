@@ -1,0 +1,15 @@
+/amp-mcp.exe
+/amp-mcp.exe~
+/dist/
+/.local/
+*.test.exe
+connections.json
+connections.json.*
+jobs.json
+jobs.json.lock
+/artifacts/
+/credentials/
+/setups/
+__pycache__/
+*.pyc
+api-spec.json

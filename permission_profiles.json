@@ -1,0 +1,30 @@
+[
+  {
+    "id": "observer",
+    "description": "Read status and console output; no console input, power operations, file changes or administration.",
+    "application": [
+      "Core.AppManagement.ReadConsole"
+    ],
+    "full_scope": false
+  },
+  {
+    "id": "operator",
+    "description": "Manage the application: lifecycle, updates, console commands, game files, module settings and actions. Resolves module rights from the selected application catalog. No AMP account/role administration or AMP configuration-file editing.",
+    "application": [
+      "Core.AppManagement.ReadConsole",
+      "Core.AppManagement.StartApplication",
+      "Core.AppManagement.StopApplication",
+      "Core.AppManagement.RestartApplication",
+      "Core.AppManagement.UpdateApplication",
+      "Core.AppManagement.SendConsoleInput"
+    ],
+    "module_management": true,
+    "full_scope": false
+  },
+  {
+    "id": "admin",
+    "description": "Full AMP authority in the selected scope, including current and future module permissions. Uses the supported API all-nodes grant, not an enumerated catalog. Requires a bootstrap administrator already holding all-scope authority.",
+    "application": [],
+    "full_scope": true
+  }
+]

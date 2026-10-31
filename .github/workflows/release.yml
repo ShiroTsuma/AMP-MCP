@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Check formatting
+        shell: pwsh
+        run: |
+          $files = @(git ls-files '*.go')
+          $unformatted = & gofmt -l @files
+          if ($LASTEXITCODE -ne 0 -or $unformatted) { throw "Run gofmt on: $unformatted" }
+      - name: Vet
+        run: go vet ./...
+      - name: Test critical contracts
+        run: go test ./...
+      - name: Build and verify public ZIP
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: |
+          ./scripts/package-release.ps1 -Version $env:RELEASE_VERSION
+          python scripts/check_release.py --version $env:RELEASE_VERSION
+          if ($LASTEXITCODE -ne 0) { throw 'Release verification failed.' }
+      - name: Publish GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: |
+          $releaseArgs = @('release', 'create', $env:RELEASE_VERSION, '--verify-tag', '--generate-notes', '--title', "AMP-MCP $env:RELEASE_VERSION")
+          if ($env:RELEASE_VERSION.Contains('-')) { $releaseArgs += '--prerelease' }
+          $releaseArgs += @('dist/amp-mcp-windows-x64.zip', 'dist/SHA256SUMS')
+          & gh @releaseArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Release publication failed; inspect GitHub before retrying.' }
