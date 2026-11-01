@@ -99,6 +99,14 @@ create instances, change roles or start games as an installation test.
 
 The agent can install and register the server. AMP sign-in, token entry, certificate trust and game-platform verification may still require you. To create a restricted role afterward, use the [permission setup prompt](docs/setup.md#agent-assisted-permission-setup).
 
+## Example workflow
+
+Start with an inventory request before making changes:
+
+> List the instances on `my-panel`. For each instance, show its name, application and running state. Only read information.
+
+The assistant discovers the connection, reads the instance inventory and summarizes it. Follow up using the returned instance identifier, for example: “Show the latest console output for this instance.” Names and available operations come from your AMP panel; no example credentials or server addresses are required.
+
 ## Example requests
 
 - “Show stopped servers and the latest console messages for this instance.”
