@@ -30,14 +30,14 @@
 {{else if eq .Page "list"}}
   {{if not .ReadOnly}}<div class="buttons"><a class="button" href="/edit">New</a></div>{{end}}
   {{if .Records}}
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr>{{range .Columns}}<th scope="col">{{or .Label .Name}}</th>{{end}}<th></th></tr></thead>
     <tbody>
     {{range $rec := .Records}}
       <tr>{{range $.Columns}}<td>{{index $rec .Name}}</td>{{end}}<td><a href="/edit?key={{index $rec $.Key}}">Edit</a></td></tr>
     {{end}}
     </tbody>
-  </table>
+  </table></div>
   {{else}}<p>No entries yet.</p>{{end}}
 
 {{else if eq .Page "form"}}
@@ -45,6 +45,7 @@
   <form method="post" action="/submit" class="card">
     <h2>{{if .IsNew}}New entry{{else}}Edit {{.OrigKey}}{{end}}</h2>
     <input type="hidden" name="_key" value="{{.OrigKey}}">
+    <div class="fields">
     {{range .Fields}}
     {{$v := index $.Values .Name}}
     <div class="field">
@@ -68,6 +69,7 @@
       {{if .Help}}<p class="help">{{.Help}}</p>{{end}}
     </div>
     {{end}}
+    </div>
     <div class="buttons">
       {{if not .ReadOnly}}<button name="_op" value="save">Save</button>{{end}}
       {{range .Actions}}<button name="_op" value="action:{{.Name}}" class="secondary">{{or .Label .Name}}</button>{{end}}
