@@ -58,8 +58,8 @@ Outputs are `dist/amp-mcp-windows-x64.zip` or `dist/amp-mcp-linux-x64.tar.gz`, p
 ## GitHub Actions
 
 - **CI** runs on pushes and pull requests on Windows and Ubuntu. Each checks formatting, runs vet, Go tests and the stdio smoke check, then builds and inspects its release archive, uploaded as a workflow artifact.
-- **Release** runs on pushed `v*` tags. Windows and Ubuntu jobs validate and package; a publish job writes one `SHA256SUMS` for both archives and creates the GitHub release with generated notes. A prerelease suffix marks the release as a prerelease.
+- **Release** runs on pushed `v*` tags. Windows and Ubuntu jobs validate and package; a publish job writes one `SHA256SUMS` for both archives and creates the GitHub release with the annotated tag message as notes. A prerelease suffix marks the release as a prerelease.
 
-Commit and push reviewed source, then push a semantic version tag such as `v0.9.0` to publish. Actions must be enabled. The workflow uses the built-in `GITHUB_TOKEN` and needs no AMP credentials or personal token. Untagged CI runs do not publish.
+Commit and push reviewed source, then push an annotated semantic version tag such as `git tag -a v0.9.0 -m "<release notes>"` to publish; the tag message becomes the release notes. Actions must be enabled. The workflow uses the built-in `GITHUB_TOKEN` and needs no AMP credentials or personal token. Untagged CI runs do not publish.
 
 Archive filenames are stable. Version identity comes from the tag and `amp-mcp.exe version`. Do not retag released versions. Remaining work is in the [roadmap](roadmap.md).

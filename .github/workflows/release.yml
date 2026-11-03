@@ -83,7 +83,7 @@ jobs:
           $archives = @('amp-mcp-windows-x64.zip', 'amp-mcp-linux-x64.tar.gz')
           $sums = foreach ($a in $archives) { (Get-FileHash -LiteralPath $a -Algorithm SHA256).Hash.ToLowerInvariant() + "  $a" }
           [IO.File]::WriteAllText((Join-Path $PWD 'SHA256SUMS'), (($sums | Sort-Object { $_.Substring(66) }) -join "`n") + "`n", [Text.UTF8Encoding]::new($false))
-          $releaseArgs = @('release', 'create', $env:RELEASE_VERSION, '--verify-tag', '--generate-notes', '--title', "AMP-MCP $env:RELEASE_VERSION")
+          $releaseArgs = @('release', 'create', $env:RELEASE_VERSION, '--verify-tag', '--notes-from-tag', '--title', "AMP-MCP $env:RELEASE_VERSION")
           if ($env:RELEASE_VERSION.Contains('-')) { $releaseArgs += '--prerelease' }
           $releaseArgs += @($archives + 'SHA256SUMS')
           & gh @releaseArgs
