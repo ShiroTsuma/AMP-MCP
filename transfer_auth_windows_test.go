@@ -10,6 +10,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -163,6 +165,7 @@ func TestCriticalDelegationDPAPIAndDownloadIntegrity(t *testing.T) {
 	}
 
 	// Replace only the transport, so no download can reach the network.
+	t.Setenv("AMP_MCP_CONFIG", filepath.Join(t.TempDir(), "connections.json"))
 	saved := http.DefaultTransport
 	defer func() { http.DefaultTransport = saved }()
 	data := "synthetic binary\x00jar"
@@ -171,9 +174,16 @@ func TestCriticalDelegationDPAPIAndDownloadIntegrity(t *testing.T) {
 	http.DefaultTransport = fixtureRoundTripper(func(r *http.Request) (*http.Response, error) {
 		return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader(data)), ContentLength: int64(len(data)), Header: make(http.Header)}, nil
 	})
-	got, e := fetchInstallFile(context.Background(), "https://example.invalid/release.jar", hash, 100)
-	if e != nil || string(got) != data {
+	f, size, e := fetchInstallFile(context.Background(), "https://example.invalid/release.jar", hash, 100)
+	if e != nil {
 		t.Fatal("verified download failed")
+	}
+	got := make([]byte, size)
+	_, e = f.ReadAt(got, 0)
+	f.Close()
+	os.Remove(f.Name())
+	if e != nil || string(got) != data {
+		t.Fatal("verified download staged wrong bytes")
 	}
 	for _, x := range []struct {
 		url, hash string
@@ -184,7 +194,7 @@ func TestCriticalDelegationDPAPIAndDownloadIntegrity(t *testing.T) {
 		{"http://example.invalid/release.jar", hash, 100},
 		{"https://user:password@example.invalid/release.jar", hash, 100},
 	} {
-		if _, e = fetchInstallFile(context.Background(), x.url, x.hash, x.limit); e == nil {
+		if _, _, e = fetchInstallFile(context.Background(), x.url, x.hash, x.limit); e == nil {
 			t.Fatal("unsafe or unverifiable download accepted")
 		}
 	}

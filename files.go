@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
@@ -9,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -65,7 +67,7 @@ func addFileTools(s registry, a *App) {
 		return map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "instance_id": map[string]any{"type": "string", "pattern": "^[0-9a-fA-F-]{36}$"}, "filename": map[string]any{"type": "string", "minLength": 1, "maxLength": 4096}}
 	}
 	props := common()
-	props["max_bytes"] = map[string]any{"type": "integer", "minimum": 1, "maximum": 256 * 1024 * 1024}
+	props["max_bytes"] = map[string]any{"type": "integer", "minimum": 1, "maximum": maxTransferBytes}
 	addTool(s, &mcp.Tool{Name: "amp_download_file", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "filename"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection string
@@ -169,7 +171,7 @@ func addFileTools(s registry, a *App) {
 		if e != nil {
 			return result(nil, e), nil
 		}
-		v, e := uploadData(ctx, cl, x.Connection, x.Scope, name, data, x.Overwrite, "amp_write_file")
+		v, e := uploadData(ctx, cl, x.Connection, x.Scope, name, bytes.NewReader(data), int64(len(data)), x.Overwrite, "amp_write_file")
 		return result(v, e), nil
 	})
 }
@@ -189,7 +191,7 @@ func fileReadBounds(body map[string]any) error {
 	return nil
 }
 
-func uploadData(ctx context.Context, cl *Client, connection, scope, name string, data []byte, overwrite bool, tool string) (any, error) {
+func uploadData(ctx context.Context, cl *Client, connection, scope, name string, data io.ReaderAt, size int64, overwrite bool, tool string) (any, error) {
 	caps, e := cl.call(ctx, scope, "Core/GetAPISpec", map[string]any{})
 	if e != nil {
 		return nil, e
@@ -228,10 +230,16 @@ func uploadData(ctx context.Context, cl *Client, connection, scope, name string,
 		defer cancel()
 		cl.call(releaseCtx, scope, "FileManagerPlugin/ReleaseFileUploadLock", map[string]any{"Filename": name})
 	}()
-	for offset := 0; ; {
-		end := min(offset+transferChunk, len(data))
-		final := end == len(data)
-		_, e = cl.call(ctx, scope, "FileManagerPlugin/WriteFileChunk", map[string]any{"Filename": name, "Data": base64.StdEncoding.EncodeToString(data[offset:end]), "Offset": offset, "FinalChunk": final})
+	buf := make([]byte, transferChunk)
+	for offset := int64(0); ; {
+		end := min(offset+transferChunk, size)
+		final := end == size
+		chunk := buf[:end-offset]
+		if _, e = data.ReadAt(chunk, offset); e != nil && e != io.EOF {
+			v, err := finishSubmission(j, nil, fmt.Errorf("cannot read staged data after %d confirmed bytes; a partial file may remain: %w", offset, e))
+			return v, err
+		}
+		_, e = cl.call(ctx, scope, "FileManagerPlugin/WriteFileChunk", map[string]any{"Filename": name, "Data": base64.StdEncoding.EncodeToString(chunk), "Offset": offset, "FinalChunk": final})
 		if e != nil {
 			v, err := finishSubmission(j, nil, fmt.Errorf("upload interrupted after %d confirmed bytes; a partial file may remain: %w", offset, e))
 			return v, err
@@ -241,5 +249,5 @@ func uploadData(ctx context.Context, cl *Client, connection, scope, name string,
 			break
 		}
 	}
-	return finishSubmission(j, map[string]any{"bytes_written": len(data), "filename": name, "atomic": false}, nil)
+	return finishSubmission(j, map[string]any{"bytes_written": size, "filename": name, "atomic": false}, nil)
 }

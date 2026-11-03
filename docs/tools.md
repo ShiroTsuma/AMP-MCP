@@ -70,9 +70,9 @@ For persisted logs, `amp_file_read` operation `tail` reads a bounded suffix near
 
 ## Files and mods
 
-Paths are relative to the instance and passed as `path`. `amp_file_read` operation `read` returns UTF-8 text with byte offsets. Operation `download` creates a local artifact for binary or larger files (16 MiB default limit, 256 MiB maximum).
+Paths are relative to the instance and passed as `path`. `amp_file_read` operation `read` returns UTF-8 text with byte offsets. Operation `download` creates a local artifact for binary or larger files (16 MiB default limit, 5 GiB maximum).
 
-`amp_file_write` operation `write` accepts up to 1 MiB of UTF-8 and an explicit `overwrite` choice. Operation `install_from_url` downloads HTTPS, verifies the required publisher SHA-512, then uploads to an exact path (64 MiB default, 256 MiB maximum). Get compatible versions and hashes from the publishers.
+`amp_file_write` operation `write` accepts up to 1 MiB of UTF-8 and an explicit `overwrite` choice. Operation `install_from_url` downloads HTTPS, verifies the required publisher SHA-512, then uploads to an exact path (64 MiB default, 5 GiB maximum). The download is staged in a local file beside the connection file rather than in memory, and is abandoned if no data arrives for two minutes. Get compatible versions and hashes from the publishers.
 
 Chunked uploads are not atomic and are not retried automatically. Inspect partial files before another upload or game start.
 

@@ -200,7 +200,7 @@ var facades = []facade{
 			{Name: "create_archive", Tool: "amp_create_archive", Desc: "zip path into an archive; overwrite=true replaces an existing archive."},
 			{Name: "extract_archive", Tool: "amp_extract_archive", Desc: "extract archive path into destination (default: its directory)."},
 			{Name: "write", Tool: "amp_write_file", Desc: "write UTF-8 text (max 1 MiB) to path; overwrite must be stated; not atomic."},
-			{Name: "install_from_url", Tool: "amp_install_file_from_url", Desc: "download HTTPS source_url, verify sha512, upload the bytes to path (default limit 64 MiB); overwrite must be stated; not atomic."},
+			{Name: "install_from_url", Tool: "amp_install_file_from_url", Desc: "download HTTPS source_url, verify sha512, upload the bytes to path (default limit 64 MiB, max_bytes up to 5 GiB); overwrite must be stated; not atomic."},
 		},
 		Rename: map[string]string{"Filename": "path", "filename": "path", "NewPath": "path", "oldDirectory": "path", "Origin": "path", "DirectoryName": "path", "TrashDirectoryName": "path", "PathToArchive": "path", "ArchivePath": "path", "NewFilename": "new_name", "NewDirectoryName": "new_name", "TargetDirectory": "target_directory", "DestinationPath": "destination"},
 		Params: map[string]string{"path": "Instance-relative file or directory path.", "new_name": "New name without directory.", "overwrite": "write/install_from_url: required true/false; create_archive: replace an existing archive.", "text": "write: UTF-8 file content.", "source_url": "install_from_url: HTTPS URL without credentials.", "sha512": "install_from_url: publisher SHA-512 (hex).", "max_bytes": "install_from_url: download size limit."}},
