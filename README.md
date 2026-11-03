@@ -92,7 +92,7 @@ configuration format. Preserve all existing servers and settings. Tell me
 if the client must reconnect before its new tools become available.
 
 After configuration, test the named connection and, when tools are available,
-call amp_list_connections and amp_list_instances. Only perform read-only
+call amp_list_connections and amp_instance_read with operation list. Only perform read-only
 verification. Report what succeeded and any remaining manual step; do not
 create instances, change roles or start games as an installation test.
 ```

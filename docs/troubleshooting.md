@@ -20,9 +20,9 @@ DPAPI credentials cannot move to another PC or Windows account. Re-enter them th
 
 ## ADS works, but the game says permission denied
 
-ADS and applications have separate contexts. Check the exact node with `amp_check_permissions` and the application's `instance_id`. A common-role flag alone grants no application rights.
+ADS and applications have separate contexts. Check the exact node with `amp_access_read` operation `check_permissions` and the application's `instance_id`. A common-role flag alone grants no application rights.
 
-For a managed role, preview `amp_expand_privileges`. If `missing_actor_permissions` is nonempty, use an authorized bootstrap administrator. Role-edit permission does not permit granting rights the actor lacks. See [new modules](setup.md#full-admin-and-new-modules).
+For a managed role, run `amp_account_setup_read` operation `expand_preview`. If `missing_actor_permissions` is nonempty, use an authorized bootstrap administrator. Role-edit permission does not permit granting rights the actor lacks. See [new modules](setup.md#full-admin-and-new-modules).
 
 ## Steam asks for verification or ownership
 
@@ -38,13 +38,13 @@ Check whether the response acknowledged submission or established completion. In
 
 ## Console history is empty
 
-Console output contains messages received by the current MCP process. It cannot recover messages from before it connected. Use `tail` for its newest buffered messages or `amp_tail_file` for a persisted log. Inspect truncation and file-change fields.
+Console output contains messages received by the current MCP process. It cannot recover messages from before it connected. Use `tail` for its newest buffered messages or `amp_file_read` operation `tail` for a persisted log. Inspect truncation and file-change fields.
 
 If a game unexpectedly sleeps, check its AMP sleep/idle settings. Disable them only when continuous operation is intended.
 
 ## A write timed out or setup partially failed
 
-Do not repeat a mutation blindly. Inspect `amp_get_job`, `amp_reconcile_job` or `amp_get_account_setup` using returned IDs. Account setup and chunked uploads are not atomic. Reconciliation reads state without replaying writes.
+Do not repeat a mutation blindly. Inspect `amp_job_read` operation `get` (with `refresh: true` to reconcile) or `amp_account_setup_read` operation `get` using returned IDs. Account setup and chunked uploads are not atomic. Reconciliation reads state without replaying writes.
 
 ## Report a problem
 

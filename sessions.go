@@ -21,9 +21,9 @@ var sessionHandles struct {
 	items map[string]sessionReference
 }
 
-func addSessionTools(s *mcp.Server, a *App) {
+func addSessionTools(s registry, a *App) {
 	text := map[string]any{"type": "string", "minLength": 1}
-	addTool(s, &mcp.Tool{Name: "amp_list_sessions", Description: "List AMP sessions without exposing remote session IDs. If AMP provides an Id, returns a process-local session_handle valid for 15 minutes; otherwise returns can_terminate=false. Omit instance_id for ADS.", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"connection": text, "instance_id": map[string]any{"type": "string", "pattern": "^[0-9a-fA-F-]{36}$"}, "limit": map[string]any{"type": "integer", "minimum": 1, "maximum": 200}, "offset": map[string]any{"type": "integer", "minimum": 0}}, "required": []string{"connection"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_list_sessions", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"connection": text, "instance_id": map[string]any{"type": "string", "pattern": "^[0-9a-fA-F-]{36}$"}, "limit": map[string]any{"type": "integer", "minimum": 1, "maximum": 200}, "offset": map[string]any{"type": "integer", "minimum": 0}}, "required": []string{"connection"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection    string
 			Scope         string `json:"instance_id"`
@@ -85,7 +85,7 @@ func addSessionTools(s *mcp.Server, a *App) {
 		}
 		return result(map[string]any{"items": out, "next_offset": end, "more": end < len(entries), "handle_lifetime_seconds": 900}, nil), nil
 	})
-	addTool(s, &mcp.Tool{Name: "amp_end_session", Description: "End an AMP session using a session_handle returned by amp_list_sessions in this MCP process. May log out that user's panel or API connection.", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"connection": text, "session_handle": text}, "required": []string{"connection", "session_handle"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_end_session", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"connection": text, "session_handle": text}, "required": []string{"connection", "session_handle"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection string
 			Handle     string `json:"session_handle"`
@@ -95,7 +95,7 @@ func addSessionTools(s *mcp.Server, a *App) {
 		ref, ok := sessionHandles.items[x.Handle]
 		sessionHandles.Unlock()
 		if !ok || ref.Connection != x.Connection || time.Now().After(ref.Expires) {
-			return result(nil, errors.New("session handle expired or is unknown; call amp_list_sessions again")), nil
+			return result(nil, errors.New("session handle expired or is unknown; call amp_access_read operation=sessions again")), nil
 		}
 		cl, e := a.client(x.Connection)
 		if e != nil {

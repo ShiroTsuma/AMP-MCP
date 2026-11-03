@@ -56,17 +56,17 @@ func readTextFileResult(v any, offset, chunk int) (any, error) {
 		return nil, e
 	}
 	if !utf8.Valid(b) {
-		return nil, errors.New("chunk is not valid UTF-8; use amp_download_file for binary data or a split Unicode character")
+		return nil, errors.New("chunk is not valid UTF-8; use amp_file_read operation=download for binary data or a split Unicode character")
 	}
 	return map[string]any{"text": string(b), "bytes": len(b), "next_offset": offset + len(b), "eof": len(b) < chunk}, nil
 }
-func addFileTools(s *mcp.Server, a *App) {
+func addFileTools(s registry, a *App) {
 	common := func() map[string]any {
 		return map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "instance_id": map[string]any{"type": "string", "pattern": "^[0-9a-fA-F-]{36}$"}, "filename": map[string]any{"type": "string", "minLength": 1, "maxLength": 4096}}
 	}
 	props := common()
 	props["max_bytes"] = map[string]any{"type": "integer", "minimum": 1, "maximum": 256 * 1024 * 1024}
-	addTool(s, &mcp.Tool{Name: "amp_download_file", Description: "Download an instance file in chunks to a generated local artifact path. Default maximum 16 MiB; up to 256 MiB. Does not overwrite local files or return binary data inline.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "filename"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_download_file", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "filename"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection string
 			Scope      string `json:"instance_id"`
@@ -149,7 +149,7 @@ func addFileTools(s *mcp.Server, a *App) {
 	props = common()
 	props["text"] = map[string]any{"type": "string", "maxLength": 1024 * 1024}
 	props["overwrite"] = map[string]any{"type": "boolean"}
-	addTool(s, &mcp.Tool{Name: "amp_write_file", Description: "Write UTF-8 text up to 1 MiB to an instance file. overwrite is required. Overwrite preflight and chunk writes are not atomic against other clients. Interrupted writes may leave a partial file and are never retried.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "filename", "text", "overwrite"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_write_file", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "filename", "text", "overwrite"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection     string
 			Scope          string `json:"instance_id"`
@@ -185,6 +185,7 @@ func fileReadBounds(body map[string]any) error {
 		return fmt.Errorf("ChunkSize must be 1-%d", transferChunk)
 	}
 	body["ChunkSize"] = chunk
+	body["Offset"] = numeric(body["Offset"], 0)
 	return nil
 }
 

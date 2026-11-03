@@ -13,9 +13,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func addSettingSecretTool(s *mcp.Server, a *App) {
+func addSettingSecretTool(s registry, a *App) {
 	props := map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "instance_id": map[string]any{"type": "string", "pattern": guidPattern}, "node": map[string]any{"type": "string", "minLength": 1, "maxLength": 512}, "overwrite": map[string]any{"type": "boolean", "description": "Explicitly allow replacing a configured secret."}}
-	addTool(s, &mcp.Tool{Name: "amp_generate_setting_secret", Description: "Generate a strong random value for a writable AMP setting marked secret, save it with CurrentUser DPAPI before submission, then set it through AMP. No caller-supplied or plaintext output secret. Returns credential_path for the human-only show-user-password viewer. Requires the setting permission; uncertain writes are journaled and never replayed.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "node", "overwrite"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_generate_setting_secret", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "node", "overwrite"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection string
 			Scope      string `json:"instance_id"`

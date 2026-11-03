@@ -51,7 +51,7 @@ func annotateTaskState(v any) {
 	}
 }
 func jobView(j Job) map[string]any {
-	v := map[string]any{"job_id": j.ID, "connection": j.Connection, "tool": j.Tool, "endpoint": j.Endpoint, "state": j.State, "created": j.Created, "updated": j.Updated, "api_scope": "ads"}
+	v := map[string]any{"job_id": j.ID, "connection": j.Connection, "tool": publicToolName(j.Tool), "endpoint": j.Endpoint, "state": j.State, "created": j.Created, "updated": j.Updated, "api_scope": "ads"}
 	if j.Instance != "" {
 		v["instance_id"] = j.Instance
 	}

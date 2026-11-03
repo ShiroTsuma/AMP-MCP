@@ -282,22 +282,22 @@ func (a *App) expandPrivileges(ctx context.Context, x expandInput) (any, error) 
 	if e = saveSetup(r); e != nil {
 		return nil, setupFailure(&r, e)
 	}
-	j.State, j.Note = "succeeded", "profile-bound privilege expansion verified; receipt available through amp_get_account_setup"
+	j.State, j.Note = "succeeded", "profile-bound privilege expansion verified; receipt available through amp_account_setup_read operation=get"
 	if e = saveJob(j); e != nil {
 		return nil, setupFailure(&r, e)
 	}
 	return map[string]any{"expansion_id": r.ID, "role_id": p.RoleID, "module": p.Module, "added_permissions": p.Missing, "cleared_denials": p.ClearDenials, "state": r.State, "jobs": r.Jobs}, nil
 }
-func addExpandPrivilegesTool(s *mcp.Server, a *App) {
+func addExpandPrivilegesTool(s registry, a *App) {
 	props := map[string]any{
 		"connection":  map[string]any{"type": "string", "minLength": 1, "description": "Authorized role administrator already possessing the rights it grants; use bootstrap if the target lacks them."},
 		"setup_id":    map[string]any{"type": "string", "pattern": "^[a-f0-9]{32}$", "description": "Original completed setup receipt. Optional only with exactly one matching setup for the acting account; specify when using a different bootstrap account."},
 		"instance_id": map[string]any{"type": "string", "pattern": guidPattern, "description": "Running example of the new module or application configuration."},
-		"module":      map[string]any{"type": "string", "minLength": 1, "maxLength": 100, "description": "Exact ModuleName from amp_get_application_info; checked against instance_id."},
+		"module":      map[string]any{"type": "string", "minLength": 1, "maxLength": 100, "description": "Exact ModuleName from amp_application_read operation=info; checked against instance_id."},
 		"mode":        map[string]any{"type": "string", "enum": []string{"preview", "apply"}},
 		"plan_id":     map[string]any{"type": "string", "pattern": "^[a-f0-9]{64}$", "description": "Required for apply; use the exact value returned by preview."},
 	}
-	addTool(s, &mcp.Tool{Name: "amp_expand_privileges", Description: "Initialize an existing managed role for a new module or application configuration. Preview returns missing profile rights and missing actor rights; apply requires plan_id and an actor holding the rights it grants. Admin ensures full application authority; operator resolves module settings/actions and game-file rights; observer keeps fixed read rights. Local roles cannot expand to another instance. Journals partial failures, verifies fresh target access and never replays writes. Does not add ADS rights, assign stronger memberships or change the profile.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "module", "mode"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_expand_privileges", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "module", "mode"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x expandInput
 		if e := json.Unmarshal(r.Params.Arguments, &x); e != nil {
 			return result(nil, fmt.Errorf("invalid expansion input")), nil

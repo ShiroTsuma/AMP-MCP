@@ -40,7 +40,7 @@ func (e *APIError) Error() string {
 		return "AMP denied this operation; check the account role permissions"
 	case "rejected":
 		if e.Code == "user_requires_disable" {
-			return "AMP requires disabling the user before deletion; call amp_update_user with disabled=true, then delete"
+			return "AMP requires disabling the user before deletion; call amp_user operation=update with disabled=true, then delete"
 		}
 		return "AMP rejected the operation; inspect the panel event log"
 	default:

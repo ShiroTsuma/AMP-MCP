@@ -16,10 +16,10 @@ type consoleBuffer struct {
 
 var buffers sync.Map
 
-func addExtraTools(s *mcp.Server, a *App) {
+func addExtraTools(s registry, a *App) {
 	props := map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "instance_id": map[string]any{"type": "string", "pattern": "^[0-9a-fA-F-]{36}$"}, "cursor": map[string]any{"type": "integer", "minimum": 0}, "limit": map[string]any{"type": "integer", "minimum": 1, "maximum": 200}}
 	props["mode"] = map[string]any{"type": "string", "enum": []string{"tail", "since"}, "description": "Without mode: newest entries when cursor is omitted, otherwise entries since cursor. since requires cursor; tail rejects cursor."}
-	addTool(s, &mcp.Tool{Name: "amp_read_console", Description: "Read console output, defaulting to the newest limit entries. Use mode=since with next_cursor for subsequent messages without replaying history. Buffer belongs to this MCP process and can be truncated or lost on restart. Does not start stopped instances.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_read_console", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection string `json:"connection"`
 			Instance   string `json:"instance_id"`
@@ -80,8 +80,8 @@ func addExtraTools(s *mcp.Server, a *App) {
 		return result(map[string]any{"entries": b.lines[start:end], "next_cursor": b.offset + end, "truncated": lost, "history": "received_by_this_process", "mode": x.Mode}, nil), nil
 	})
 	schema := map[string]any{"type": "object", "properties": map[string]any{"connection": props["connection"], "instance_id": props["instance_id"]}, "required": []string{"connection"}, "additionalProperties": false}
-	for _, name := range []string{"amp_test_connection", "amp_get_capabilities"} {
-		addTool(s, &mcp.Tool{Name: name, Description: "Check ADS connectivity and report version and available modules without credentials.", InputSchema: schema, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	{
+		addTool(s, &mcp.Tool{Name: "amp_test_connection", InputSchema: schema, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 			var x struct {
 				Connection string `json:"connection"`
 				Scope      string `json:"instance_id"`

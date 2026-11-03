@@ -17,28 +17,29 @@ try:
  proc.stdin.write(json.dumps({'jsonrpc':'2.0','method':'notifications/initialized'})+'\n');proc.stdin.flush()
  r=request(2,'tools/list',{});tools=r['result']['tools'];assert len(tools)>20
  assert all('outputSchema' not in t for t in tools)
- r=request(3,'tools/call',{'name':'amp_start_instance','arguments':{}});assert r.get('error') or r.get('result',{}).get('isError'),r
+ r=request(3,'tools/call',{'name':'amp_instance','arguments':{'operation':'start'}});assert r.get('error') or r.get('result',{}).get('isError'),r
  r=request(4,'tools/call',{'name':'amp_list_connections','arguments':{}});assert 'structuredContent' not in r.get('result',{})
  print('PASS: handshake, tools/list, validation, content-only results; tools='+str(len(tools)))
  if a.connection:
-  for i,name in enumerate(['amp_test_connection','amp_list_instances','amp_list_tasks','amp_list_settings','amp_list_jobs','amp_list_sessions'],5):
+  for i,(name,op) in enumerate([('amp_test_connection',None),('amp_instance_read','list'),('amp_application_read','tasks'),('amp_setting_read','list'),('amp_job_read','list'),('amp_access_read','sessions')],5):
    args={'connection':a.connection}
-   if name=='amp_list_instances':args['ForceIncludeSelf']=True
+   if op:args['operation']=op
+   if op=='list' and name=='amp_instance_read':args['include_self']=True
    r=request(i,'tools/call',{'name':name,'arguments':args});assert 'result' in r and not r['result'].get('isError'),r
    val=json.loads(r['result']['content'][0]['text'])
-   if name=='amp_list_instances':
+   if name=='amp_instance_read':
     assert isinstance(val,dict) and isinstance(val['items'],list)
     items=val['items']
     print('PASS: live discovery; instances='+str(len(items)))
     if items:print('Instance field names: '+','.join(items[0].keys()))
     ads=next((v for v in items if str(v.get('InstanceName','')).startswith('ADS') and v.get('Running')),None)
    elif name=='amp_test_connection':print('PASS: DPAPI, HTTPS trust and AMP authentication')
-   else:print('PASS: read-only '+name)
+   else:print('PASS: read-only '+name+' '+op)
   if ads:
-   r=request(20,'tools/call',{'name':'amp_get_application_info','arguments':{'connection':a.connection,'instance_id':ads['InstanceID']}})
+   r=request(20,'tools/call',{'name':'amp_application_read','arguments':{'operation':'info','connection':a.connection,'instance_id':ads['InstanceID']}})
    assert 'result' in r and not r['result'].get('isError'),r
    print('PASS: ADS proxy authentication and scoped module read')
-   r=request(21,'tools/call',{'name':'amp_list_module_actions','arguments':{'connection':a.connection,'instance_id':ads['InstanceID']}})
+   r=request(21,'tools/call',{'name':'amp_module_action_read','arguments':{'operation':'list','connection':a.connection,'instance_id':ads['InstanceID']}})
    assert 'result' in r and not r['result'].get('isError'),r
    print('PASS: authenticated module-action discovery (no actions executed)')
 finally:

@@ -27,7 +27,6 @@ type Definition struct {
 	Resolve           string
 	ReadOnly          bool
 	ListResult        bool
-	Description       string
 	Schema            map[string]any
 	Arguments         map[string]string
 	EnumArguments     map[string]map[string]any
@@ -166,7 +165,7 @@ func (a *App) execute(ctx context.Context, d Definition, args map[string]any) (a
 			}
 		}
 		if !found {
-			return nil, fmt.Errorf("instance GUID not found; call amp_list_instances")
+			return nil, fmt.Errorf("instance GUID not found; call amp_instance_read operation=list")
 		}
 	}
 	if d.Endpoint == "Core/SetConfig" || d.Endpoint == "Core/GetSettingValues" {
@@ -180,6 +179,18 @@ func (a *App) execute(ctx context.Context, d Definition, args map[string]any) (a
 	}
 	if d.Name == "amp_read_file" {
 		if e = fileReadBounds(body); e != nil {
+			return nil, e
+		}
+	}
+	if d.Endpoint == "Core/GetAuditLogEntries" {
+		// AMP pages backwards from Before; fetch enough rows for the requested local page.
+		body["Count"] = numeric(args["offset"], 0) + numeric(args["limit"], 50)
+		if _, ok := body["Before"]; !ok {
+			body["Before"] = nil
+		}
+	}
+	if d.Endpoint == "Core/UpdateUserInfo" {
+		if e = fillUserFlags(ctx, cl, scope, body); e != nil {
 			return nil, e
 		}
 	}
@@ -272,6 +283,41 @@ func (a *App) execute(ctx context.Context, d Definition, args map[string]any) (a
 	}
 	return v, nil
 }
+
+// UpdateUserInfo replaces every flag; keep the current value of omitted ones.
+func fillUserFlags(ctx context.Context, cl *Client, scope string, body map[string]any) error {
+	fields := []string{"Disabled", "PasswordExpires", "CannotChangePassword", "MustChangePassword", "EmailAddress"}
+	complete := true
+	for _, f := range fields {
+		if _, ok := body[f]; !ok {
+			complete = false
+		}
+	}
+	if complete {
+		return nil
+	}
+	v, e := cl.call(ctx, scope, "Core/GetAMPUserInfo", map[string]any{"Username": body["Username"]})
+	if e != nil {
+		return e
+	}
+	current, ok := v.(map[string]any)
+	if !ok {
+		return fmt.Errorf("cannot read the user's current flags; supply disabled, password_expires, cannot_change_password and must_change_password explicitly")
+	}
+	for _, f := range fields {
+		if _, ok := body[f]; ok {
+			continue
+		}
+		value, ok := current[f]
+		if !ok && f != "EmailAddress" {
+			return fmt.Errorf("AMP did not report the user's current %s; supply it explicitly", f)
+		}
+		if ok {
+			body[f] = value
+		}
+	}
+	return nil
+}
 func pageItems(v any, args map[string]any) (any, error) {
 	arr, ok := v.([]any)
 	if !ok {
@@ -300,14 +346,14 @@ func pageItems(v any, args map[string]any) (any, error) {
 	end := min(start+limit, len(filtered))
 	return map[string]any{"items": filtered[start:end], "next_offset": end, "more": end < len(filtered)}, nil
 }
-func server(a *App) *mcp.Server {
-	s := mcp.NewServer(&mcp.Implementation{Name: "amp-mcp", Version: version}, nil)
+func internalTools(a *App) registry {
+	s := registry{}
 	var defs []Definition
 	if e := json.Unmarshal(catalog, &defs); e != nil {
 		panic(e)
 	}
 	for _, d := range defs {
-		addTool(s, &mcp.Tool{Name: d.Name, Description: d.Description, InputSchema: d.Schema, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: d.ReadOnly}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		addTool(s, &mcp.Tool{Name: d.Name, InputSchema: d.Schema, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: d.ReadOnly}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 			var args map[string]any
 			if e := json.Unmarshal(r.Params.Arguments, &args); e != nil {
 				return result(nil, e), nil
@@ -317,7 +363,7 @@ func server(a *App) *mcp.Server {
 		})
 	}
 	empty := map[string]any{"type": "object", "properties": map[string]any{}, "additionalProperties": false}
-	addTool(s, &mcp.Tool{Name: "amp_list_connections", Description: "List configured connection names without credentials.", InputSchema: empty, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(context.Context, *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_list_connections", InputSchema: empty, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(context.Context, *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		c, e := loadConfig()
 		names := []string{}
 		for n := range c.Connections {
@@ -326,7 +372,7 @@ func server(a *App) *mcp.Server {
 		sort.Strings(names)
 		return result(names, e), nil
 	})
-	addTool(s, &mcp.Tool{Name: "amp_open_connection_manager", Description: "Open the local Windows connection manager. Credentials never pass through MCP.", InputSchema: empty}, func(context.Context, *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_open_connection_manager", InputSchema: empty}, func(context.Context, *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		e := openManager()
 		return result(map[string]any{"window_opened": e == nil}, e), nil
 	})
@@ -343,6 +389,14 @@ func server(a *App) *mcp.Server {
 	addExpandPrivilegesTool(s, a)
 	addSessionTools(s, a)
 	addModuleTools(s, a)
+	return s
+}
+func server(a *App) *mcp.Server {
+	s := mcp.NewServer(&mcp.Implementation{Name: "amp-mcp", Version: version}, &mcp.ServerOptions{Instructions: serverInstructions})
+	internal := internalTools(a)
+	for _, f := range facades {
+		publishFacade(s, internal, f)
+	}
 	return s
 }
 func main() {

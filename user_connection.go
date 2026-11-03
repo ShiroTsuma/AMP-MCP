@@ -129,9 +129,9 @@ func (a *App) createUserConnection(ctx context.Context, x userConnectionInput) (
 	}
 	return map[string]any{"connection": x.Name, "username": x.Username, "instance_id": x.Instance, "job_id": j.ID, "verified": true, "authentication": "password"}, nil
 }
-func addUserConnectionTool(s *mcp.Server, a *App) {
-	props := map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "instance_id": map[string]any{"type": "string", "pattern": guidPattern}, "username": map[string]any{"type": "string", "minLength": 1, "maxLength": 100}, "credential_path": map[string]any{"type": "string", "minLength": 1, "maxLength": 4096, "description": "DPAPI credential_path from amp_generate_user_password for this exact account and instance."}, "new_connection": map[string]any{"type": "string", "minLength": 1, "maxLength": 100}}
-	addTool(s, &mcp.Tool{Name: "amp_create_user_connection", Description: "Save a native instance account connection using its generated DPAPI password file. Account and role must already exist. Verifies password login, binds the connection to this instance and refuses overwrites. Password never passes through MCP; no permanent service token is created.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "username", "credential_path", "new_connection"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func addUserConnectionTool(s registry, a *App) {
+	props := map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "instance_id": map[string]any{"type": "string", "pattern": guidPattern}, "username": map[string]any{"type": "string", "minLength": 1, "maxLength": 100}, "credential_path": map[string]any{"type": "string", "minLength": 1, "maxLength": 4096, "description": "DPAPI credential_path from amp_user operation=reset_password for this exact account and instance."}, "new_connection": map[string]any{"type": "string", "minLength": 1, "maxLength": 100}}
+	addTool(s, &mcp.Tool{Name: "amp_create_user_connection", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "username", "credential_path", "new_connection"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x userConnectionInput
 		json.Unmarshal(r.Params.Arguments, &x)
 		v, e := a.createUserConnection(ctx, x)

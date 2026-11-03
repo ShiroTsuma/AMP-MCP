@@ -60,7 +60,7 @@ func fetchInstallFile(ctx context.Context, source, checksum string, maxBytes int
 	}
 	return b, nil
 }
-func addInstallFileTool(s *mcp.Server, a *App) {
+func addInstallFileTool(s registry, a *App) {
 	props := map[string]any{
 		"connection":  map[string]any{"type": "string", "minLength": 1},
 		"instance_id": map[string]any{"type": "string", "pattern": guidPattern},
@@ -70,7 +70,7 @@ func addInstallFileTool(s *mcp.Server, a *App) {
 		"overwrite":   map[string]any{"type": "boolean"},
 		"max_bytes":   map[string]any{"type": "integer", "minimum": 1, "maximum": 256 * 1024 * 1024},
 	}
-	addTool(s, &mcp.Tool{Name: "amp_install_file_from_url", Description: "Download a release over HTTPS, verify its required publisher SHA-512, then upload binary bytes to the exact instance-relative filename. Default maximum 64 MiB. Explicit overwrite required. Chunk upload is not atomic; failures may leave a partial remote file and are never replayed.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "filename", "source_url", "sha512", "overwrite"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_install_file_from_url", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id", "filename", "source_url", "sha512", "overwrite"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection string
 			Scope      string `json:"instance_id"`

@@ -276,7 +276,7 @@ func (a *App) executeModuleAction(ctx context.Context, bound boundModuleAction, 
 		return nil, e
 	}
 	if targetFingerprint(cl.conn) != bound.Target {
-		return nil, errors.New("connection target changed; describe the module action again with amp_get_module_action")
+		return nil, errors.New("connection target changed; describe the module action again with amp_module_action_read operation=describe")
 	}
 	spec, e := cl.apiSpec(ctx, bound.Scope, true)
 	if e != nil {
@@ -296,7 +296,7 @@ func (a *App) executeModuleAction(ctx context.Context, bound boundModuleAction, 
 		}
 	}
 	if !found || !current.Supported || actionSignature(current) != bound.Signature {
-		return nil, errors.New("module action contract changed or disappeared; describe it again with amp_get_module_action")
+		return nil, errors.New("module action contract changed or disappeared; describe it again with amp_module_action_read operation=describe")
 	}
 	b, _ := json.Marshal(current.Schema)
 	var schema jsonschema.Schema
@@ -308,7 +308,7 @@ func (a *App) executeModuleAction(ctx context.Context, bound boundModuleAction, 
 		return nil, errors.New("invalid action schema")
 	}
 	if e := resolved.Validate(args); e != nil {
-		return nil, errors.New("invalid action arguments; follow names, required fields, types, bounds and enum labels from amp_get_module_action")
+		return nil, errors.New("invalid action arguments; follow names, required fields, types, bounds and enum labels from amp_module_action_read operation=describe")
 	}
 	body := map[string]any{}
 	props := current.Schema["properties"].(map[string]any)
@@ -341,7 +341,7 @@ func (a *App) executeModuleAction(ctx context.Context, bound boundModuleAction, 
 	return finishSubmission(j, v, e)
 }
 
-func addModuleTools(s *mcp.Server, a *App) {
+func addModuleTools(s registry, a *App) {
 	common := func() map[string]any {
 		return map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "instance_id": map[string]any{"type": "string", "pattern": guidPattern}, "module": map[string]any{"type": "string", "pattern": apiIdentifier.String()}}
 	}
@@ -350,7 +350,7 @@ func addModuleTools(s *mcp.Server, a *App) {
 	props["limit"] = map[string]any{"type": "integer", "minimum": 1, "maximum": 100}
 	props["offset"] = map[string]any{"type": "integer", "minimum": 0}
 	props["refresh"] = map[string]any{"type": "boolean"}
-	addTool(s, &mcp.Tool{Name: "amp_list_module_actions", Description: "Discover application/plugin actions from authenticated instance API metadata, including parameters, enum choices and permissions. Does not run actions or start stopped instances. Unsupported credential/record parameters are reported, not exposed.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_list_module_actions", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "instance_id"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection    string
 			Scope         string `json:"instance_id"`
@@ -387,7 +387,7 @@ func addModuleTools(s *mcp.Server, a *App) {
 	props = common()
 	props["method"] = map[string]any{"type": "string", "pattern": apiIdentifier.String()}
 	required := []string{"connection", "instance_id", "module", "method"}
-	addTool(s, &mcp.Tool{Name: "amp_get_module_action", Description: "Describe one discovered application/plugin action: exact argument schema, enum labels, required permissions and contract_id. Does not execute the action. Use the contract_id with amp_run_module_action.", InputSchema: map[string]any{"type": "object", "properties": props, "required": required, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_get_module_action", InputSchema: map[string]any{"type": "object", "properties": props, "required": required, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x moduleActionRequest
 		json.Unmarshal(r.Params.Arguments, &x)
 		bound, e := a.describeModuleAction(ctx, x)
@@ -401,14 +401,14 @@ func addModuleTools(s *mcp.Server, a *App) {
 	props["contract_id"] = map[string]any{"type": "string", "pattern": "^[0-9a-f]{64}$"}
 	// Names are dynamic; values have an explicit recursive JSON type union. The
 	// exact per-action schema is supplied by get and enforced again server-side.
-	props["arguments"] = map[string]any{"type": "object", "maxProperties": 40, "additionalProperties": map[string]any{"$ref": "#/$defs/value"}, "description": "Named arguments matching arguments_schema from amp_get_module_action; enum labels, not AMP numeric values. Use {} for no parameters."}
+	props["arguments"] = map[string]any{"type": "object", "maxProperties": 40, "additionalProperties": map[string]any{"$ref": "#/$defs/value"}, "description": "Named arguments matching arguments_schema from amp_module_action_read operation=describe; enum labels, not AMP numeric values. Use {} for no parameters."}
 	value := map[string]any{"anyOf": []any{
 		map[string]any{"type": "string", "maxLength": 65536},
 		map[string]any{"type": "number"}, map[string]any{"type": "boolean"}, map[string]any{"type": "null"},
 		map[string]any{"type": "array", "maxItems": 1000, "items": map[string]any{"$ref": "#/$defs/value"}},
 		map[string]any{"type": "object", "maxProperties": 100, "additionalProperties": map[string]any{"$ref": "#/$defs/value"}},
 	}}
-	addTool(s, &mcp.Tool{Name: "amp_run_module_action", Description: "Execute a described application/plugin action on the specified instance using its contract_id and named arguments. May change server state. Refreshes and validates the exact AMP contract before execution; mutations return durable jobs and are never automatically replayed.", InputSchema: map[string]any{"type": "object", "properties": props, "required": append(required, "contract_id", "arguments"), "additionalProperties": false, "$defs": map[string]any{"value": value}}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_run_module_action", InputSchema: map[string]any{"type": "object", "properties": props, "required": append(required, "contract_id", "arguments"), "additionalProperties": false, "$defs": map[string]any{"value": value}}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		if len(r.Params.Arguments) > 1024*1024 {
 			return result(nil, errors.New("action arguments exceed 1 MiB")), nil
 		}
@@ -419,7 +419,7 @@ func addModuleTools(s *mcp.Server, a *App) {
 			return result(nil, e), nil
 		}
 		if moduleContractID(bound) != x.ContractID {
-			return result(nil, errors.New("action contract or target changed; call amp_get_module_action again")), nil
+			return result(nil, errors.New("action contract or target changed; call amp_module_action_read operation=describe again")), nil
 		}
 		v, e := a.executeModuleAction(ctx, bound, x.Arguments)
 		return result(v, e), nil
@@ -461,5 +461,5 @@ func (a *App) describeModuleAction(ctx context.Context, x moduleActionRequest) (
 		}
 		return boundModuleAction{Connection: x.Connection, Scope: x.Scope, Target: targetFingerprint(cl.conn), Signature: actionSignature(action), Tool: "amp_run_module_action", Action: action}, nil
 	}
-	return boundModuleAction{}, errors.New("method not available; discover actions with amp_list_module_actions")
+	return boundModuleAction{}, errors.New("method not available; discover actions with amp_module_action_read operation=list")
 }

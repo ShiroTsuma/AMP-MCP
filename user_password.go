@@ -14,9 +14,9 @@ import (
 )
 
 // Passwords never enter tool arguments, jobs, results or command-line strings.
-func addUserPasswordTool(s *mcp.Server, a *App) {
+func addUserPasswordTool(s registry, a *App) {
 	props := map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "instance_id": map[string]any{"type": "string", "pattern": guidPattern}, "username": map[string]any{"type": "string", "minLength": 1, "maxLength": 100}}
-	addTool(s, &mcp.Tool{Name: "amp_generate_user_password", Description: "Reset an AMP user's password to a cryptographically generated value. Saves it with Windows CurrentUser DPAPI before submission; plaintext never passes through MCP. Omit instance_id for ADS. Returns a local credential_path; the human can run amp-mcp show-user-password PATH to view it. Changes login credentials; never replay after an uncertain outcome.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "username"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_generate_user_password", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "username"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection string
 			Scope      string `json:"instance_id"`

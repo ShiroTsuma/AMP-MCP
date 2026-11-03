@@ -114,9 +114,9 @@ func permissionHeld(ctx context.Context, cl *Client, scope, node string) (bool, 
 	return allowed, nil
 }
 
-func addPermissionTool(s *mcp.Server, a *App) {
+func addPermissionTool(s registry, a *App) {
 	props := map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "instance_id": map[string]any{"type": "string", "pattern": guidPattern}, "permissions": map[string]any{"type": "array", "minItems": 1, "maxItems": 50, "uniqueItems": true, "items": map[string]any{"type": "string", "minLength": 1, "maxLength": 512}}}
-	addTool(s, &mcp.Tool{Name: "amp_check_permissions", Description: "Check the current authenticated session's effective AMP permissions for permission nodes. The special node * verifies full scope authority, including ADS namespace checks. Omit instance_id for ADS. Returns named booleans; does not change roles.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "permissions"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_check_permissions", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "permissions"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection  string
 			Scope       string `json:"instance_id"`

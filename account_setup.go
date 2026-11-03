@@ -79,7 +79,7 @@ func profileByID(id string) (permissionProfile, error) {
 			return p, nil
 		}
 	}
-	return permissionProfile{}, errors.New("unknown permission profile; call amp_list_permission_profiles")
+	return permissionProfile{}, errors.New("unknown permission profile; call amp_account_setup_read operation=profiles")
 }
 func stringList(v any) []string {
 	items, _ := v.([]any)
@@ -433,7 +433,7 @@ func (a *App) applyAccountSetup(ctx context.Context, x setupInput) (any, error) 
 		return nil, e
 	}
 	if x.PlanID != p.PlanID {
-		return nil, errors.New("setup plan is stale; call amp_preview_account_setup again")
+		return nil, errors.New("setup plan is stale; call amp_account_setup_read operation=preview again")
 	}
 	admin, e := a.client(x.Connection)
 	if e != nil {
@@ -668,23 +668,22 @@ func (a *App) finalizeAccountSetup(ctx context.Context, connection, id string, s
 func setupSummary(r setupReceipt) any {
 	return map[string]any{"setup_id": r.ID, "role_id": r.RoleID, "state": r.State, "step": r.Step, "profile": r.Plan.Input.Profile, "scope": r.Plan.Input.Scope, "jobs": r.Jobs}
 }
-func addAccountSetupTools(s *mcp.Server, a *App) {
+func addAccountSetupTools(s registry, a *App) {
 	empty := map[string]any{"type": "object", "properties": map[string]any{}, "additionalProperties": false}
-	addTool(s, &mcp.Tool{Name: "amp_list_permission_profiles", Description: "List game-agnostic profiles: observer reads status/console; operator manages application lifecycle, console commands, files and module configuration/actions; admin also manages AMP accounts and roles. Select global or instance scope in setup. Operator resolves the selected module's advertised rights.", InputSchema: empty, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(context.Context, *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_list_permission_profiles", InputSchema: empty, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(context.Context, *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		return result(permissionProfiles(), nil), nil
 	})
 	instanceArray := map[string]any{"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": map[string]any{"type": "string", "pattern": guidPattern}}
 	for _, apply := range []bool{false, true} {
 		props := map[string]any{"connection": map[string]any{"type": "string", "minLength": 1, "description": "Bootstrap administrator connection."}, "target_connection": map[string]any{"type": "string", "minLength": 1, "description": "Dedicated existing account service login on the same ADS."}, "profile": map[string]any{"type": "string", "enum": []string{"observer", "operator", "admin"}}, "scope": map[string]any{"type": "string", "enum": []string{"global", "instance"}}, "role_name": map[string]any{"type": "string", "minLength": 1, "maxLength": 100, "pattern": ".*\\S.*"}, "application_instance_ids": instanceArray, "bootstrap_role_id": map[string]any{"type": "string", "pattern": guidPattern, "description": "Optional dedicated temporary role removed from the target only during finalization."}}
 		required := []string{"connection", "target_connection", "profile", "scope", "role_name", "application_instance_ids"}
-		name, description := "amp_preview_account_setup", "Preview API-only creation of a dedicated role. Instance scope requires exactly one application context. Global creates a template role; supply one running example per module type. Resolves and returns exact grants and plan_id without writes. No game-specific profiles."
+		name := "amp_preview_account_setup"
 		if apply {
 			name = "amp_setup_account"
-			description = "Apply a current preview: create role, grant resolved permissions, assign target and verify fresh target sessions. Global uses a common role; instance uses an ordinary role scoped to one instance. Non-atomic: partial errors include receipt/job IDs; never blindly replay. Finish with amp_finalize_account_setup."
 			props["plan_id"] = map[string]any{"type": "string", "pattern": "^[a-f0-9]{64}$"}
 			required = append(required, "plan_id")
 		}
-		addTool(s, &mcp.Tool{Name: name, Description: description, InputSchema: map[string]any{"type": "object", "properties": props, "required": required, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: !apply}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		addTool(s, &mcp.Tool{Name: name, InputSchema: map[string]any{"type": "object", "properties": props, "required": required, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: !apply}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 			var x setupInput
 			json.Unmarshal(r.Params.Arguments, &x)
 			if apply {
@@ -695,7 +694,7 @@ func addAccountSetupTools(s *mcp.Server, a *App) {
 			return result(v, e), nil
 		})
 	}
-	addTool(s, &mcp.Tool{Name: "amp_finalize_account_setup", Description: "Verify target sessions, then remove the named temporary TARGET role and verify again. Global needs a newly created instance per configured module; instance scope verifies its one configured instance and checks ADS/other-instance access is denied. Admin keeps intended role/user rights only in the selected scope. No automatic privilege restoration or mutation replay.", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "setup_id": map[string]any{"type": "string", "pattern": "^[a-f0-9]{32}$"}, "verification_instance_ids": instanceArray}, "required": []string{"connection", "setup_id", "verification_instance_ids"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_finalize_account_setup", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"connection": map[string]any{"type": "string", "minLength": 1}, "setup_id": map[string]any{"type": "string", "pattern": "^[a-f0-9]{32}$"}, "verification_instance_ids": instanceArray}, "required": []string{"connection", "setup_id", "verification_instance_ids"}, "additionalProperties": false}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection string
 			ID         string   `json:"setup_id"`
@@ -705,7 +704,7 @@ func addAccountSetupTools(s *mcp.Server, a *App) {
 		v, e := a.finalizeAccountSetup(ctx, x.Connection, x.ID, x.Scopes)
 		return result(v, e), nil
 	})
-	addTool(s, &mcp.Tool{Name: "amp_get_account_setup", Description: "Read a local setup receipt, resolved grants and mutation job IDs for recovery. Contains no credentials; does not replay any calls.", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"setup_id": map[string]any{"type": "string", "pattern": "^[a-f0-9]{32}$"}}, "required": []string{"setup_id"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_get_account_setup", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"setup_id": map[string]any{"type": "string", "pattern": "^[a-f0-9]{32}$"}}, "required": []string{"setup_id"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			ID string `json:"setup_id"`
 		}

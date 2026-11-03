@@ -311,9 +311,9 @@ func (a *App) refreshJob(ctx context.Context, j Job) (Job, error) {
 	}
 	return j, saveJob(j)
 }
-func addJobTools(s *mcp.Server, a *App) {
+func addJobTools(s registry, a *App) {
 	text := func() map[string]any { return map[string]any{"type": "string", "minLength": 1} }
-	addTool(s, &mcp.Tool{Name: "amp_list_jobs", Description: "List locally recorded operations for a connection. Does not poll AMP. Submitted/unknown are not success.", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"connection": text(), "state": map[string]any{"type": "string", "enum": []string{"submitting", "submitted", "running", "succeeded", "failed", "unknown"}}, "limit": map[string]any{"type": "integer", "minimum": 1, "maximum": 100}, "offset": map[string]any{"type": "integer", "minimum": 0}}, "required": []string{"connection"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_list_jobs", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"connection": text(), "state": map[string]any{"type": "string", "enum": []string{"submitting", "submitted", "running", "succeeded", "failed", "unknown"}}, "limit": map[string]any{"type": "integer", "minimum": 1, "maximum": 100}, "offset": map[string]any{"type": "integer", "minimum": 0}}, "required": []string{"connection"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection, State string
 			Limit, Offset     int
@@ -346,9 +346,8 @@ func addJobTools(s *mcp.Server, a *App) {
 		}
 		return result(map[string]any{"jobs": views, "more": end < len(out), "next_offset": end}, nil), nil
 	})
-	for _, name := range []string{"amp_get_job", "amp_reconcile_job"} {
-		refreshByDefault := name == "amp_reconcile_job"
-		addTool(s, &mcp.Tool{Name: name, Description: "Get a recorded job. Reconcile polls AMP without re-submitting the original operation; missing tasks remain unknown.", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"connection": text(), "job_id": text(), "refresh": map[string]any{"type": "boolean"}}, "required": []string{"connection", "job_id"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	{
+		addTool(s, &mcp.Tool{Name: "amp_get_job", InputSchema: map[string]any{"type": "object", "properties": map[string]any{"connection": text(), "job_id": text(), "refresh": map[string]any{"type": "boolean"}}, "required": []string{"connection", "job_id"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 			var x struct {
 				Connection string
 				ID         string `json:"job_id"`
@@ -363,18 +362,14 @@ func addJobTools(s *mcp.Server, a *App) {
 			if !ok || j.Connection != x.Connection {
 				return result(nil, errors.New("job not found for this connection")), nil
 			}
-			refresh := refreshByDefault
-			if x.Refresh != nil {
-				refresh = *x.Refresh
-			}
-			if refresh {
+			if x.Refresh != nil && *x.Refresh {
 				j, e = a.refreshJob(ctx, j)
 			}
 			return result(jobView(j), e), nil
 		})
 	}
 	props := map[string]any{"connection": text(), "instance_id": map[string]any{"type": "string", "pattern": "^[0-9a-fA-F-]{36}$"}, "task_id": text()}
-	addTool(s, &mcp.Tool{Name: "amp_get_task", Description: "Find an AMP task by its returned Id. Omit instance_id for an ADS task.", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "task_id"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	addTool(s, &mcp.Tool{Name: "amp_get_task", InputSchema: map[string]any{"type": "object", "properties": props, "required": []string{"connection", "task_id"}, "additionalProperties": false}, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true}}, func(ctx context.Context, r *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var x struct {
 			Connection string
 			Scope      string `json:"instance_id"`

@@ -94,23 +94,28 @@ func TestCriticalModuleActionContract(t *testing.T) {
 	target := func(method string) map[string]any {
 		return map[string]any{"connection": "fixture", "instance_id": scope, "module": "MinecraftModule", "method": method}
 	}
+	describe := func(method string) map[string]any {
+		args := target(method)
+		args["operation"] = "describe"
+		return args
+	}
 	before, e := cs.ListTools(ctx, nil)
 	if e != nil {
 		t.Fatal(e)
 	}
-	setupArgs := map[string]any{"connection": "fixture", "target_connection": "fixture", "profile": "minecraft-manager", "scope": "instance", "role_name": "synthetic", "application_instance_ids": []string{scope}}
-	if !call("amp_preview_account_setup", setupArgs).IsError {
+	setupArgs := map[string]any{"operation": "preview", "connection": "fixture", "target_connection": "fixture", "profile": "minecraft-manager", "scope": "instance", "role_name": "synthetic", "application_instance_ids": []string{scope}}
+	if !call("amp_account_setup_read", setupArgs).IsError {
 		t.Fatal("game-specific profile was accepted")
 	}
 	setupArgs["profile"] = "operator"
 	setupArgs["application_instance_ids"] = []string{scope, "00000000-0000-0000-0000-000000000002"}
-	if !call("amp_preview_account_setup", setupArgs).IsError {
+	if !call("amp_account_setup_read", setupArgs).IsError {
 		t.Fatal("local setup accepted multiple instances")
 	}
-	if !call("amp_get_module_action", target("SetPassword")).IsError {
+	if !call("amp_module_action_read", describe("SetPassword")).IsError {
 		t.Fatal("credential operation exposed")
 	}
-	listing := call("amp_list_module_actions", map[string]any{"connection": "fixture", "instance_id": scope, "module": "MinecraftModule"})
+	listing := call("amp_module_action_read", map[string]any{"operation": "list", "connection": "fixture", "instance_id": scope, "module": "MinecraftModule"})
 	if listing.IsError {
 		t.Fatal(listing)
 	}
@@ -135,7 +140,7 @@ func TestCriticalModuleActionContract(t *testing.T) {
 	if blocked != 2 {
 		t.Fatal("unsupported module methods were not reported")
 	}
-	described := call("amp_get_module_action", target("FixtureAction"))
+	described := call("amp_module_action_read", describe("FixtureAction"))
 	if described.IsError {
 		t.Fatal(described)
 	}
@@ -166,7 +171,7 @@ func TestCriticalModuleActionContract(t *testing.T) {
 		}
 	}
 	// Prove validation now applies to the existing static tools as well.
-	if !call("amp_start_instance", map[string]any{"connection": "fixture", "instance_id": scope, "unexpected": true}).IsError {
+	if !call("amp_instance", map[string]any{"operation": "start", "connection": "fixture", "instance_id": scope, "unexpected": true}).IsError {
 		t.Fatal("static tool accepted unknown field")
 	}
 	if writes.Load() != 0 {

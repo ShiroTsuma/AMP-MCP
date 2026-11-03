@@ -37,7 +37,6 @@
     "arguments": {
       "ForceIncludeSelf": "ForceIncludeSelf"
     },
-    "description": "Read list instances. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
     "listResult": true
   },
   {
@@ -67,8 +66,7 @@
     },
     "arguments": {
       "instance_id": "InstanceId"
-    },
-    "description": "Read get instance. Targets ADS; instance power operations control AMP itself, not just the game."
+    }
   },
   {
     "name": "amp_get_instance_status",
@@ -103,7 +101,6 @@
       "additionalProperties": false
     },
     "arguments": {},
-    "description": "Read get instance status. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
     "listResult": true
   },
   {
@@ -147,7 +144,6 @@
     "arguments": {
       "instance_id": "instanceId"
     },
-    "description": "Read get application endpoints. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
     "listResult": true
   },
   {
@@ -177,8 +173,7 @@
     },
     "arguments": {
       "instance_id": "InstanceName"
-    },
-    "description": "Submit start instance. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_stop_instance",
@@ -207,8 +202,7 @@
     },
     "arguments": {
       "instance_id": "InstanceName"
-    },
-    "description": "Submit stop instance. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_restart_instance",
@@ -237,8 +231,7 @@
     },
     "arguments": {
       "instance_id": "InstanceName"
-    },
-    "description": "Submit restart instance. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_upgrade_instance",
@@ -267,8 +260,7 @@
     },
     "arguments": {
       "instance_id": "InstanceName"
-    },
-    "description": "Submit upgrade instance. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_delete_instance",
@@ -297,8 +289,7 @@
     },
     "arguments": {
       "instance_id": "InstanceName"
-    },
-    "description": "Submit delete instance. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_list_applications",
@@ -333,7 +324,6 @@
       "additionalProperties": false
     },
     "arguments": {},
-    "description": "Read list applications. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
     "listResult": true
   },
   {
@@ -376,7 +366,6 @@
     "arguments": {
       "ModuleName": "ModuleName"
     },
-    "description": "Read get provision arguments. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
     "listResult": true
   },
   {
@@ -412,7 +401,6 @@
       "additionalProperties": false
     },
     "arguments": {},
-    "description": "Read list datastores. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
     "listResult": true
   },
   {
@@ -429,7 +417,8 @@
           "minLength": 1
         },
         "id": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "required": [
@@ -440,8 +429,7 @@
     },
     "arguments": {
       "id": "id"
-    },
-    "description": "Read get datastore. Targets ADS; instance power operations control AMP itself, not just the game."
+    }
   },
   {
     "name": "amp_move_instance_datastore",
@@ -462,7 +450,8 @@
           "pattern": "^[0-9a-fA-F-]{36}$"
         },
         "datastoreId": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "required": [
@@ -475,8 +464,7 @@
     "arguments": {
       "instance_id": "instanceId",
       "datastoreId": "datastoreId"
-    },
-    "description": "Submit move instance datastore. Targets ADS; instance power operations control AMP itself, not just the game. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_list_deployment_templates",
@@ -511,7 +499,6 @@
       "additionalProperties": false
     },
     "arguments": {},
-    "description": "Read list deployment templates. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
     "listResult": true
   },
   {
@@ -555,7 +542,6 @@
     "arguments": {
       "instance_id": "InstanceName"
     },
-    "description": "Read get instance network. Targets ADS; instance power operations control AMP itself, not just the game. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
     "listResult": true
   },
   {
@@ -582,8 +568,7 @@
       ],
       "additionalProperties": false
     },
-    "arguments": {},
-    "description": "Read get application status. Targets the application inside an AMP instance."
+    "arguments": {}
   },
   {
     "name": "amp_get_application_info",
@@ -609,8 +594,7 @@
       ],
       "additionalProperties": false
     },
-    "arguments": {},
-    "description": "Read get application info. Targets the application inside an AMP instance."
+    "arguments": {}
   },
   {
     "name": "amp_list_tasks",
@@ -649,7 +633,6 @@
       "additionalProperties": false
     },
     "arguments": {},
-    "description": "Read list tasks. Targets the application inside an AMP instance. Returns {items,next_offset,more}; use query, limit and offset to narrow results. Omit instance_id to target ADS.",
     "listResult": true
   },
   {
@@ -683,8 +666,7 @@
     },
     "arguments": {
       "TaskId": "TaskId"
-    },
-    "description": "Submit cancel task. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion. Omit instance_id to target ADS."
+    }
   },
   {
     "name": "amp_start_application",
@@ -710,8 +692,7 @@
       ],
       "additionalProperties": false
     },
-    "arguments": {},
-    "description": "Submit start application. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    "arguments": {}
   },
   {
     "name": "amp_stop_application",
@@ -737,8 +718,7 @@
       ],
       "additionalProperties": false
     },
-    "arguments": {},
-    "description": "Submit stop application. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    "arguments": {}
   },
   {
     "name": "amp_restart_application",
@@ -764,8 +744,7 @@
       ],
       "additionalProperties": false
     },
-    "arguments": {},
-    "description": "Submit restart application. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    "arguments": {}
   },
   {
     "name": "amp_kill_application",
@@ -791,8 +770,7 @@
       ],
       "additionalProperties": false
     },
-    "arguments": {},
-    "description": "Submit kill application. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    "arguments": {}
   },
   {
     "name": "amp_update_application",
@@ -818,8 +796,7 @@
       ],
       "additionalProperties": false
     },
-    "arguments": {},
-    "description": "Submit update application. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    "arguments": {}
   },
   {
     "name": "amp_send_console_message",
@@ -852,8 +829,7 @@
     },
     "arguments": {
       "message": "message"
-    },
-    "description": "Submit send console message. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_list_settings",
@@ -894,8 +870,7 @@
       ],
       "additionalProperties": false
     },
-    "arguments": {},
-    "description": "List setting metadata without current values. Filter by section or query, paginate with offset and limit. Returns items,next_offset,more. Omit instance_id for ADS."
+    "arguments": {}
   },
   {
     "name": "amp_list_schedule",
@@ -920,8 +895,7 @@
       ],
       "additionalProperties": false
     },
-    "arguments": {},
-    "description": "Read list schedule. Targets the application inside an AMP instance. Omit instance_id to target ADS."
+    "arguments": {}
   },
   {
     "name": "amp_set_trigger_enabled",
@@ -960,8 +934,7 @@
     "arguments": {
       "Id": "Id",
       "Enabled": "Enabled"
-    },
-    "description": "Submit set trigger enabled. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_run_trigger",
@@ -995,8 +968,7 @@
     },
     "arguments": {
       "triggerId": "triggerId"
-    },
-    "description": "Submit run trigger. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_delete_schedule_task",
@@ -1037,8 +1009,7 @@
     "arguments": {
       "TriggerID": "TriggerID",
       "TaskID": "TaskID"
-    },
-    "description": "Submit delete schedule task. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_delete_trigger",
@@ -1072,8 +1043,7 @@
     },
     "arguments": {
       "TriggerID": "TriggerID"
-    },
-    "description": "Submit delete trigger. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_get_audit_log",
@@ -1098,11 +1068,6 @@
             "null"
           ]
         },
-        "Count": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 200
-        },
         "offset": {
           "type": "integer",
           "minimum": 0
@@ -1118,17 +1083,13 @@
         }
       },
       "required": [
-        "connection",
-        "Before",
-        "Count"
+        "connection"
       ],
       "additionalProperties": false
     },
     "arguments": {
-      "Before": "Before",
-      "Count": "Count"
+      "Before": "Before"
     },
-    "description": "Read get audit log. Targets the application inside an AMP instance. Returns {items,next_offset,more}; use query, limit and offset to narrow results. Omit instance_id to target ADS.",
     "listResult": true
   },
   {
@@ -1154,8 +1115,7 @@
       ],
       "additionalProperties": false
     },
-    "arguments": {},
-    "description": "Read list schedule actions. Targets the application inside an AMP instance. Omit instance_id to target ADS."
+    "arguments": {}
   },
   {
     "name": "amp_list_files",
@@ -1201,7 +1161,6 @@
     "arguments": {
       "Dir": "Dir"
     },
-    "description": "Read list files. Targets the application inside an AMP instance. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
     "listResult": true
   },
   {
@@ -1238,8 +1197,7 @@
       "required": [
         "connection",
         "instance_id",
-        "Filename",
-        "Offset"
+        "Filename"
       ],
       "additionalProperties": false
     },
@@ -1247,8 +1205,7 @@
       "Filename": "Filename",
       "Offset": "Offset",
       "ChunkSize": "ChunkSize"
-    },
-    "description": "Read read file. Targets the application inside an AMP instance."
+    }
   },
   {
     "name": "amp_create_directory",
@@ -1281,8 +1238,7 @@
     },
     "arguments": {
       "NewPath": "NewPath"
-    },
-    "description": "Submit create directory. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_rename_file",
@@ -1321,8 +1277,7 @@
     "arguments": {
       "Filename": "Filename",
       "NewFilename": "NewFilename"
-    },
-    "description": "Submit rename file. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_rename_directory",
@@ -1361,8 +1316,7 @@
     "arguments": {
       "oldDirectory": "oldDirectory",
       "NewDirectoryName": "NewDirectoryName"
-    },
-    "description": "Submit rename directory. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_copy_file",
@@ -1401,8 +1355,7 @@
     "arguments": {
       "Origin": "Origin",
       "TargetDirectory": "TargetDirectory"
-    },
-    "description": "Submit copy file. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_trash_file",
@@ -1435,8 +1388,7 @@
     },
     "arguments": {
       "Filename": "Filename"
-    },
-    "description": "Submit trash file. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_trash_directory",
@@ -1469,8 +1421,7 @@
     },
     "arguments": {
       "DirectoryName": "DirectoryName"
-    },
-    "description": "Submit trash directory. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_empty_trash",
@@ -1503,8 +1454,7 @@
     },
     "arguments": {
       "TrashDirectoryName": "TrashDirectoryName"
-    },
-    "description": "Submit empty trash. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_create_archive",
@@ -1541,8 +1491,7 @@
     "arguments": {
       "PathToArchive": "PathToArchive",
       "OverwriteExisting": "OverwriteExisting"
-    },
-    "description": "Submit create archive. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_extract_archive",
@@ -1580,8 +1529,7 @@
     "arguments": {
       "ArchivePath": "ArchivePath",
       "DestinationPath": "DestinationPath"
-    },
-    "description": "Submit extract archive. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_list_stores",
@@ -1621,7 +1569,6 @@
       "additionalProperties": false
     },
     "arguments": {},
-    "description": "Read list stores. Targets the application inside an AMP instance. Returns {items,next_offset,more}; use query, limit and offset to narrow results.",
     "listResult": true
   },
   {
@@ -1650,10 +1597,13 @@
           "minLength": 1
         },
         "page": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "pageSize": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
         }
       },
       "required": [
@@ -1669,8 +1619,7 @@
       "SearchQuery": "SearchQuery",
       "page": "page",
       "pageSize": "pageSize"
-    },
-    "description": "Read search store. Targets the application inside an AMP instance."
+    }
   },
   {
     "name": "amp_get_store_entry",
@@ -1709,8 +1658,7 @@
     "arguments": {
       "StoreName": "StoreName",
       "EntryId": "EntryId"
-    },
-    "description": "Read get store entry. Targets the application inside an AMP instance."
+    }
   },
   {
     "name": "amp_install_store_entry",
@@ -1749,8 +1697,7 @@
     "arguments": {
       "StoreName": "StoreName",
       "EntryId": "EntryId"
-    },
-    "description": "Submit install store entry. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_update_store_entry",
@@ -1789,8 +1736,7 @@
     "arguments": {
       "StoreName": "StoreName",
       "EntryId": "EntryId"
-    },
-    "description": "Submit update store entry. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_uninstall_store_entry",
@@ -1829,8 +1775,7 @@
     "arguments": {
       "StoreName": "StoreName",
       "EntryId": "EntryId"
-    },
-    "description": "Submit uninstall store entry. Targets the application inside an AMP instance. This operation may change or delete server data. A successful submission does not mean completion."
+    }
   },
   {
     "name": "amp_list_users",
@@ -1870,8 +1815,7 @@
     },
     "arguments": {},
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "List users. Omit instance_id to target ADS. "
+    "constantArguments": {}
   },
   {
     "name": "amp_get_user",
@@ -1905,8 +1849,7 @@
       "username": "Username"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Get user. Omit instance_id to target ADS. "
+    "constantArguments": {}
   },
   {
     "name": "amp_create_user",
@@ -1940,8 +1883,7 @@
       "username": "Username"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Create user. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_update_user",
@@ -1983,11 +1925,7 @@
       },
       "required": [
         "connection",
-        "username",
-        "disabled",
-        "password_expires",
-        "cannot_change_password",
-        "must_change_password"
+        "username"
       ],
       "additionalProperties": false
     },
@@ -2000,8 +1938,7 @@
       "email_address": "EmailAddress"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Update user. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_delete_user",
@@ -2035,8 +1972,7 @@
       "username": "Username"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Delete user. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_list_roles",
@@ -2076,8 +2012,7 @@
     },
     "arguments": {},
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "List roles. Omit instance_id to target ADS. "
+    "constantArguments": {}
   },
   {
     "name": "amp_get_role_permissions",
@@ -2126,8 +2061,7 @@
       "role_id": "RoleId"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Get role permissions. Omit instance_id to target ADS. "
+    "constantArguments": {}
   },
   {
     "name": "amp_create_role",
@@ -2165,8 +2099,7 @@
       "as_common_role": "AsCommonRole"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Create role. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_rename_role",
@@ -2208,8 +2141,7 @@
       "new_name": "NewName"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Rename role. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_delete_role",
@@ -2245,8 +2177,7 @@
       "role_id": "RoleId"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Delete role. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_set_role_permission",
@@ -2296,8 +2227,7 @@
       "enabled": "Enabled"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Set role permission. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_set_user_role",
@@ -2346,8 +2276,7 @@
       "is_member": "IsMember"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Set user role. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_create_interval_trigger",
@@ -2426,8 +2355,7 @@
       "description": "description"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Create interval trigger. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_edit_interval_trigger",
@@ -2514,8 +2442,7 @@
       "description": "description"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Edit interval trigger. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_add_schedule_task",
@@ -2566,8 +2493,7 @@
       "parameter_mapping": "ParameterMapping"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Add schedule task. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_edit_schedule_task",
@@ -2620,8 +2546,7 @@
       "parameter_mapping": "ParameterMapping"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Edit schedule task. Omit instance_id to target ADS. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_create_instance",
@@ -2667,7 +2592,8 @@
           "type": "boolean"
         },
         "target_datastore": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "group": {
           "type": "string",
@@ -2703,8 +2629,7 @@
     },
     "constantArguments": {
       "PostCreate": 0
-    },
-    "description": "Create instance. Changes AMP data. Returns a tracked job; submission is not completion. "
+    }
   },
   {
     "name": "amp_clone_instance",
@@ -2750,7 +2675,8 @@
           "type": "boolean"
         },
         "target_datastore": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "copy_files": {
           "type": "boolean"
@@ -2786,8 +2712,7 @@
       "DeleteSource": false,
       "PostCreate": 0,
       "CopyFiles": true
-    },
-    "description": "Clone instance. Changes AMP data. Returns a tracked job; submission is not completion. Never deletes the source instance. "
+    }
   },
   {
     "name": "amp_update_instance_info",
@@ -2839,8 +2764,7 @@
       "display_group": "DisplayGroup"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Update instance info. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_create_deployment_template",
@@ -2870,8 +2794,7 @@
       "name": "Name"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Create deployment template. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_clone_deployment_template",
@@ -2887,7 +2810,8 @@
           "minLength": 1
         },
         "id": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "new_name": {
           "type": "string",
@@ -2906,8 +2830,7 @@
       "new_name": "NewName"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Clone deployment template. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_apply_deployment_template",
@@ -2929,7 +2852,8 @@
           "pattern": "^[0-9a-fA-F-]{36}$"
         },
         "templateid": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "new_friendly_name": {
           "type": "string",
@@ -2953,8 +2877,7 @@
       "restart_if_previously_running": "RestartIfPreviouslyRunning"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Apply deployment template. Changes AMP data. Returns a tracked job; submission is not completion. Only templates without secret provisioning inputs are supported. "
+    "constantArguments": {}
   },
   {
     "name": "amp_deploy_template",
@@ -2970,7 +2893,8 @@
           "minLength": 1
         },
         "templateid": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "required_tags": {
           "type": "array",
@@ -3024,8 +2948,7 @@
     },
     "constantArguments": {
       "PostCreate": 0
-    },
-    "description": "Deploy template. Changes AMP data. Returns a tracked job; submission is not completion. Only templates without secret provisioning inputs are supported. "
+    }
   },
   {
     "name": "amp_get_datastore_instances",
@@ -3041,7 +2964,8 @@
           "minLength": 1
         },
         "datastore_id": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "offset": {
           "type": "integer",
@@ -3067,8 +2991,7 @@
       "datastore_id": "datastoreId"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Get datastore instances. "
+    "constantArguments": {}
   },
   {
     "name": "amp_trigger_webhook",
@@ -3107,8 +3030,7 @@
       "data": "data"
     },
     "enumArguments": {},
-    "constantArguments": {},
-    "description": "Trigger webhook. Changes AMP data. Returns a tracked job; submission is not completion. "
+    "constantArguments": {}
   },
   {
     "name": "amp_get_settings",
@@ -3147,8 +3069,7 @@
     },
     "arguments": {
       "nodes": "nodes"
-    },
-    "description": "Read selected setting values with secrets redacted."
+    }
   },
   {
     "name": "amp_set_setting",
@@ -3188,8 +3109,7 @@
     "arguments": {
       "node": "node",
       "value": "value"
-    },
-    "description": "Change one non-secret, writable AMP setting. Does not restart the application; returns a tracked submission. Secret settings must be changed in the AMP panel."
+    }
   },
   {
     "name": "amp_list_setting_values",
@@ -3228,8 +3148,7 @@
     "arguments": {
       "node": "SettingNode",
       "refresh": "WithRefresh"
-    },
-    "description": "List available values for a non-secret setting in the selected instance. Set refresh=true to refresh deferred version/loader choices. Omit instance_id for ADS."
+    }
   },
   {
     "name": "amp_set_instance_network",
@@ -3286,7 +3205,6 @@
     },
     "constantArguments": {
       "mustStop": false
-    },
-    "description": "Change instance port mappings and advertised address. Discover mapping names with amp_get_instance_network. By default AMP is not permitted to stop the instance; explicitly set allow_stop to true if stopping is intended. Returns a tracked submission."
+    }
   }
 ]
