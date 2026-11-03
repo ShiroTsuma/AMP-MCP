@@ -13,7 +13,7 @@ Development backlog only. Existing workflows and operational limits are document
 
 ## Verification
 
-- [ ] Exercise the connection manager and generated-credential viewer interactively across supported Windows setups.
+- [ ] Exercise the connection panel and generated-credential viewer interactively across supported Windows and Linux desktops, and over SSH port forwarding.
 - [ ] Verify session termination with an AMP version supplying terminable session IDs.
 - [ ] Expand live verification of non-ASCII paths, archive/plugin failures and interrupted transfers on disposable instances.
 - [ ] Verify fresh full-admin onboarding end to end, including candidate-role authority before temporary bootstrap access is removed.

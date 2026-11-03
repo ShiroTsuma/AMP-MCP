@@ -3,14 +3,17 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidatePattern('^v?[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?$')]
     [string]$Version,
-    [string]$Go = 'go'
+    [string]$Go = 'go',
+    [ValidateSet('windows', 'linux')]
+    [string]$Platform = 'windows'
 )
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $distRoot = Join-Path $repoRoot 'dist'
 $stageRoot = Join-Path $distRoot ('stage-' + [guid]::NewGuid().ToString('N'))
-$archiveName = 'amp-mcp-windows-x64.zip'
+$archiveName = if ($Platform -eq 'linux') { 'amp-mcp-linux-x64.tar.gz' } else { 'amp-mcp-windows-x64.zip' }
+$exeName = if ($Platform -eq 'linux') { 'amp-mcp' } else { 'amp-mcp.exe' }
 $previousGoos = $env:GOOS
 $previousGoarch = $env:GOARCH
 $previousCgo = $env:CGO_ENABLED
@@ -23,14 +26,18 @@ function Invoke-Go {
 
 Push-Location $repoRoot
 try {
-    $env:GOOS = 'windows'
+    $env:GOOS = $Platform
     $env:GOARCH = 'amd64'
     $env:CGO_ENABLED = '0'
     New-Item -ItemType Directory -Path (Join-Path $stageRoot 'docs') -Force | Out-Null
-    $executable = Join-Path $stageRoot 'amp-mcp.exe'
+    $executable = Join-Path $stageRoot $exeName
     Invoke-Go -GoArgs @('build', '-trimpath', '-ldflags', "-s -w -X main.version=$Version", '-o', $executable, '.')
-    $actualVersion = & $executable version
-    if ($LASTEXITCODE -ne 0 -or $actualVersion -ne "amp-mcp $Version") { throw 'Packaged executable version mismatch.' }
+    # A cross-build cannot run here; check_release.py verifies it on its own OS.
+    $hostOs = if ($env:OS -eq 'Windows_NT') { 'windows' } else { 'linux' }
+    if ($hostOs -eq $Platform) {
+        $actualVersion = & $executable version
+        if ($LASTEXITCODE -ne 0 -or $actualVersion -ne "amp-mcp $Version") { throw 'Packaged executable version mismatch.' }
+    }
 
     # Explicit public payload. Never recurse over the checkout or local state.
     foreach ($relative in @('README.md', 'LICENSE', 'docs/setup.md', 'docs/tools.md', 'docs/troubleshooting.md')) {
@@ -65,9 +72,21 @@ try {
     [IO.File]::WriteAllText((Join-Path $stageRoot 'THIRD_PARTY_NOTICES.txt'), $notices.ToString(), [Text.UTF8Encoding]::new($false))
 
     $archivePath = Join-Path $distRoot $archiveName
-    Compress-Archive -Path (Join-Path $stageRoot '*') -DestinationPath $archivePath -Force
+    if ($Platform -eq 'linux') {
+        # tar keeps the executable bit; Compress-Archive would drop it.
+        if (Test-Path -LiteralPath $archivePath) { Remove-Item -LiteralPath $archivePath }
+        & tar -czf $archivePath -C $stageRoot .
+        if ($LASTEXITCODE -ne 0) { throw 'tar failed.' }
+    } else {
+        Compress-Archive -Path (Join-Path $stageRoot '*') -DestinationPath $archivePath -Force
+    }
+    # SHA256SUMS keeps one line per archive, so both platforms can share it.
     $hash = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash.ToLowerInvariant()
-    [IO.File]::WriteAllText((Join-Path $distRoot 'SHA256SUMS'), "$hash  $archiveName`n", [Text.UTF8Encoding]::new($false))
+    $sumsPath = Join-Path $distRoot 'SHA256SUMS'
+    $lines = @()
+    if (Test-Path -LiteralPath $sumsPath) { $lines = @(Get-Content -LiteralPath $sumsPath | Where-Object { $_ -and -not $_.EndsWith("  $archiveName") }) }
+    $lines = @($lines + "$hash  $archiveName" | Sort-Object)
+    [IO.File]::WriteAllText($sumsPath, (($lines -join "`n") + "`n"), [Text.UTF8Encoding]::new($false))
     Write-Output "Created $archivePath ($Version)"
 } finally {
     $env:GOOS = $previousGoos

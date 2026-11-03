@@ -33,7 +33,7 @@ try:
     print('PASS: live discovery; instances='+str(len(items)))
     if items:print('Instance field names: '+','.join(items[0].keys()))
     ads=next((v for v in items if str(v.get('InstanceName','')).startswith('ADS') and v.get('Running')),None)
-   elif name=='amp_test_connection':print('PASS: DPAPI, HTTPS trust and AMP authentication')
+   elif name=='amp_test_connection':print('PASS: credential decryption, HTTPS trust and AMP authentication')
    else:print('PASS: read-only '+name+' '+op)
   if ads:
    r=request(20,'tools/call',{'name':'amp_application_read','arguments':{'operation':'info','connection':a.connection,'instance_id':ads['InstanceID']}})

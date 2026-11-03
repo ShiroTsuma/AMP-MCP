@@ -1,0 +1,24 @@
+:root { color-scheme: light dark; --fg: #1d1f23; --bg: #f6f7f9; --card: #fff; --line: #d5d9e0; --accent: #2457c5; --err: #b42318; --ok: #1b7a3a; }
+@media (prefers-color-scheme: dark) { :root { --fg: #e6e8eb; --bg: #15171a; --card: #1e2125; --line: #363a41; --accent: #7aa2ff; --err: #ff8a80; --ok: #6fd28f; } }
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.5 system-ui, sans-serif; color: var(--fg); background: var(--bg); }
+header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; border-bottom: 1px solid var(--line); }
+h1 { font-size: 1.15rem; margin: 0; }
+h2 { font-size: 1.05rem; margin-top: 0; }
+main { max-width: 52rem; margin: 0 auto; padding: 1rem; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 1rem; }
+.field { margin-bottom: .9rem; }
+label { display: block; font-weight: 600; margin-bottom: .2rem; }
+input[type=text], input[type=number], input[type=password], select { width: 100%; padding: .45rem .55rem; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); font: inherit; }
+input[type=checkbox] { margin-right: .4rem; }
+.help { color: color-mix(in srgb, var(--fg) 65%, transparent); font-size: .9em; margin: .2rem 0 0; }
+.buttons { display: flex; flex-wrap: wrap; gap: .5rem; margin: .75rem 0; }
+button, a.button { font: inherit; padding: .4rem .9rem; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer; text-decoration: none; }
+button.secondary { background: transparent; color: var(--accent); }
+button.danger { background: transparent; color: var(--err); border-color: var(--err); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); }
+table { width: 100%; border-collapse: collapse; background: var(--card); }
+th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.status { padding: .5rem .75rem; border-left: 4px solid var(--ok); background: var(--card); }
+.status.error { border-left-color: var(--err); }

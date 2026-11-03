@@ -2,11 +2,11 @@
 
 <p align="center">
   <strong>Manage your AMP game servers from your AI assistant.</strong><br>
-  A local MCP server for CubeCoders AMP, with encrypted credentials on Windows.
+  A local MCP server for CubeCoders AMP on Windows and Linux, with encrypted credentials.
 </p>
 
 <p align="center">
-  <a href="https://github.com/ShiroTsuma/AMP-MCP/releases/latest"><img src="https://img.shields.io/badge/Download-Windows_x64-8ab4f8?style=flat-square" alt="Download for Windows x64"></a>
+  <a href="https://github.com/ShiroTsuma/AMP-MCP/releases/latest"><img src="https://img.shields.io/badge/Download-Windows_x64_%7C_Linux_x64-8ab4f8?style=flat-square" alt="Download for Windows x64 or Linux x64"></a>
   <a href="https://github.com/ShiroTsuma/AMP-MCP/actions/workflows/ci.yml"><img src="https://github.com/ShiroTsuma/AMP-MCP/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/Transport-stdio-98c379?style=flat-square" alt="stdio transport">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-98c379?style=flat-square" alt="MIT license"></a>
@@ -19,7 +19,7 @@
   <a href="docs/troubleshooting.md">Troubleshooting</a>
 </p>
 
-Ask your assistant to inspect a server, change game settings, install mods, or create an instance. AMP-MCP connects to your existing AMP panel over HTTPS and exposes its operations as tools. Credentials stay on your Windows machine, encrypted for your Windows account.
+Ask your assistant to inspect a server, change game settings, install mods, or create an instance. AMP-MCP connects to your existing AMP panel over HTTPS and exposes its operations as tools. Credentials stay on your machine, encrypted for your account (Windows DPAPI, or the Linux keyring / an encrypted vault).
 
 ## What you can do
 
@@ -36,17 +36,17 @@ Available operations depend on your AMP version, installed modules, license and 
 
 ## Quick start
 
-**Requirements:** Windows x64, Windows PowerShell 5.1, a client supporting local stdio MCP servers, and an AMP panel reachable over HTTPS. The AMP host can run Linux or Windows. The ZIP includes the executable; Go and Python are not needed to use it.
+**Requirements:** Windows x64 or Linux x64, a web browser for the local configuration panel, a client supporting local stdio MCP servers, and an AMP panel reachable over HTTPS. The AMP host can run Linux or Windows. The archive includes the executable; Go and Python are not needed to use it.
 
-1. Download **`amp-mcp-windows-x64.zip`** and **`SHA256SUMS`** from [Releases](https://github.com/ShiroTsuma/AMP-MCP/releases/latest). Compare `Get-FileHash .\amp-mcp-windows-x64.zip -Algorithm SHA256` with the published checksum, then extract the ZIP to a permanent folder.
+1. Download **`amp-mcp-windows-x64.zip`** (Windows) or **`amp-mcp-linux-x64.tar.gz`** (Linux) and **`SHA256SUMS`** from [Releases](https://github.com/ShiroTsuma/AMP-MCP/releases/latest). Verify the checksum (`Get-FileHash .\amp-mcp-windows-x64.zip -Algorithm SHA256` on Windows, `sha256sum -c --ignore-missing SHA256SUMS` on Linux), then extract the archive to a permanent folder.
 2. In AMP, create a dedicated local account, assign the permissions you want the assistant to use, and create a **Service Login** while logged in as that account. See [account setup](docs/setup.md) for full administration or restricted roles.
-3. Open PowerShell in the extracted folder and run:
+3. Open a terminal in the extracted folder and run (`./amp-mcp configure` on Linux):
 
    ```powershell
    .\amp-mcp.exe configure
    ```
 
-   Add a named connection such as `my-panel`, enter the panel's HTTPS URL, username and Service Login token, then **Test** and **Save**. A combined `username:token` is accepted. Enter credentials in this local window.
+   This opens a local configuration page in your browser (the one-time link is also printed). Add a named connection such as `my-panel`, enter the panel's HTTPS URL, username and Service Login token, then **Test** and **Save**. A combined `username:token` is accepted. Enter credentials only in this local page; press **Close panel** when done.
 4. Register the executable in your MCP client. For clients using `mcpServers` JSON:
 
    ```json
@@ -60,7 +60,7 @@ Available operations depend on your AMP version, installed modules, license and 
    }
    ```
 
-   Replace the path with your extracted location. Use your client's equivalent server configuration if its format differs, then reconnect or restart it.
+   Replace the path with your extracted location (for example `/opt/amp-mcp/amp-mcp` on Linux). Use your client's equivalent server configuration if its format differs, then reconnect or restart it.
 5. Ask your assistant:
 
    > List my AMP connections, test `my-panel`, and show its instances and application status. Only read information.
@@ -72,18 +72,19 @@ For a local connection check, run `.\amp-mcp.exe test-connection my-panel`.
 Paste this prompt into an agent that can download files, run local commands and edit your MCP client's configuration:
 
 ```text
-Set up AMP-MCP from https://github.com/ShiroTsuma/AMP-MCP on this Windows PC.
+Set up AMP-MCP from https://github.com/ShiroTsuma/AMP-MCP on this computer.
 Read the repository README and docs/setup.md first. Ask only for missing
 details: my MCP client, permanent install folder, AMP HTTPS URL, connection
 name and intended access level.
 
-Download the latest Windows x64 release ZIP and SHA256SUMS from that
-repository's GitHub release. Verify the ZIP checksum before extracting it.
+Download the latest release archive for this OS (Windows x64 ZIP or Linux
+x64 tar.gz) and SHA256SUMS from that repository's GitHub release. Verify the
+checksum before extracting it.
 Use the prebuilt executable; no source build or development tools are needed.
 If there is no release, report that instead of downloading an unrelated build.
 
-Launch amp-mcp.exe configure so I can enter my username and Service Login
-token locally. Do not ask me to paste credentials into chat or put them in
+Run amp-mcp configure (or call amp_open_connection_manager) and give me the
+local panel link so I can enter my username and Service Login token there. Do not ask me to paste credentials into chat or put them in
 commands, MCP configuration or logs. Explain any required AMP-side account
 and permission steps using docs/setup.md. I will handle sign-in and MFA.
 
@@ -121,7 +122,7 @@ Game downloads can require a licensed Steam account or manual verification in AM
 
 Close MCP clients using the executable, replace the application files with the new release, then reconnect. Configuration and generated credentials live separately under `%LOCALAPPDATA%\AMP-MCP`.
 
-DPAPI credentials belong to the Windows user and machine that saved them. Re-enter them when moving to another PC or account. See [local data and TLS](docs/setup.md#connection-storage-and-tls) for custom configuration paths and CA certificates.
+Windows DPAPI credentials belong to the Windows user and machine that saved them; Linux credentials live in the keyring or the passphrase-protected `secrets.vault`. Re-enter them when moving to another PC, OS or account. Existing Windows connections from earlier releases keep working without migration. See [local data and TLS](docs/setup.md#connection-storage-and-tls) for custom configuration paths and CA certificates.
 
 ## Documentation
 
@@ -137,4 +138,4 @@ Report bugs in [GitHub Issues](https://github.com/ShiroTsuma/AMP-MCP/issues). In
 
 AMP-MCP is an independent project and is not affiliated with CubeCoders.
 
-Released under the [MIT License](LICENSE). Release ZIPs include third-party license notices.
+Released under the [MIT License](LICENSE). Release archives include third-party license notices.

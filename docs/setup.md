@@ -1,6 +1,6 @@
 # Account and connection setup
 
-AMP-MCP runs on your Windows PC and calls AMP over HTTPS. The AMP host needs no additional MCP software.
+AMP-MCP runs on your Windows or Linux machine and calls AMP over HTTPS. The AMP host needs no additional MCP software.
 
 ## Choose your access
 
@@ -41,9 +41,9 @@ Operator permissions are resolved from the selected module's advertised catalog,
 
 1. Create a dedicated enabled local user and assign its intended role in AMP. For full administration, an AMP administrator can assign **Super Admins** to the dedicated account. For a separately managed profile, use the workflow below.
 2. Log in as that user and create a **Service Login** in AMP's account interface.
-3. Run `amp-mcp.exe configure` from the release folder.
-4. Enter the connection name, main ADS HTTPS URL, username and Service Login token. Leave **Instance ID** empty and **Authentication** set to `service_login` for a usual ADS connection.
-5. Select **Test**, then **Save**. Test does not save the form.
+3. Run `amp-mcp configure` (`amp-mcp.exe` on Windows) from the release folder. It prints a one-time `http://127.0.0.1:<port>/?t=...` link, opens it in your browser when it can, and waits until you press **Close panel**. An agent can open the same panel with `amp_open_connection_manager`.
+4. Select **New** and enter the connection name, main ADS HTTPS URL, username and Service Login token (`username:token` is accepted). Leave **Instance ID** empty and **Authentication** set to `service_login` for a usual ADS connection.
+5. Select **Test (unsaved values)**, then **Save**. Test uses the form as typed and does not save it. Saved tokens and passwords are never shown again; leave the field blank to keep the stored one.
 6. Register the executable with the `serve` argument in your MCP client, as shown in the [README](../README.md#quick-start).
 
 Permission to edit roles alone is **not sufficient** to bootstrap administration. AMP also checks authority to grant the requested rights, create roles and change memberships. Preview reports missing authority before changes.
@@ -124,15 +124,28 @@ An application can have users absent from ADS. To connect one:
 
 The helper verifies native login and saves a password connection bound to the instance. It creates no permanent Service Login and refuses overwrites. Passwords do not pass through MCP. This is separate from ADS profile setup.
 
-To view a generated credential yourself, run `amp-mcp.exe show-user-password PATH` locally. Do not copy its contents into chat.
+To view a generated credential yourself, run `amp-mcp show-user-password [PATH]` in your own terminal. It opens a local, read-only panel that lists generated credentials; a password is rendered only after you press **Reveal password** for that entry. It is never printed to the terminal or returned through MCP. Do not copy it into chat, and do not let an agent run this command for you.
 
 ## Connection storage and TLS
 
-Default storage is `%LOCALAPPDATA%\AMP-MCP`. Windows CurrentUser DPAPI binds encrypted credentials to the Windows user and machine that saved them.
+Default storage is `%LOCALAPPDATA%\AMP-MCP` on Windows and `$XDG_DATA_HOME/AMP-MCP` (normally `~/.local/share/AMP-MCP`) on Linux.
+
+Credentials are never stored in plain text:
+
+| Platform | Protection | Value in `connections.json` |
+| --- | --- | --- |
+| Windows | CurrentUser DPAPI, bound to the Windows user and machine (same format as earlier releases, so existing files keep working) | hex ciphertext |
+| Linux desktop | Secret Service (GNOME Keyring, KWallet) default collection | `secretservice:<id>` |
+| Linux headless | `secrets.vault` beside `connections.json`: AES-256-GCM with a scrypt-derived passphrase key | `vault:<id>` |
+
+The vault passphrase is entered in the panel's unlock prompt (the first passphrase creates the vault), or provided as `MCP_SECRETS_PASSPHRASE` in the MCP process environment. Credentials cannot move between platforms; re-enter them.
+
+On a remote Linux host without a browser, forward the panel's port and open the printed link locally: `ssh -L <port>:127.0.0.1:<port> user@host`. The panel listens only on `127.0.0.1`, accepts only its one-time link and session cookie, and stops after 10 idle minutes or **Close panel**.
 
 | Item | Purpose |
 | --- | --- |
-| `connections.json` | Named connections and encrypted credentials |
+| `connections.json` | Named connections and encrypted credentials (the `serviceTokenDpapi` and `passwordDpapi` keys keep their names on every platform) |
+| `secrets.vault` | Linux headless only: encrypted credential vault |
 | `jobs.json` | Operation summaries, without original arguments or authentication IDs |
 | `setups/` | Account setup and expansion receipts |
 | `credentials/` | Encrypted generated credentials |
@@ -140,6 +153,6 @@ Default storage is `%LOCALAPPDATA%\AMP-MCP`. Windows CurrentUser DPAPI binds enc
 
 Set `AMP_MCP_CONFIG` in the MCP process environment to use another connection file. Jobs, receipts, credentials and artifacts live beside it. Keep the directory private; downloaded artifacts can contain sensitive server data.
 
-HTTPS verification is always enabled. Use a certificate trusted by Windows or set **CA certificate** to a PEM CA file. The URL hostname must match the certificate. Request timeout is configurable from 1 to 300 seconds; the manager's draft connection test has a separate 12-second cap.
+HTTPS verification is always enabled. Use a certificate trusted by the operating system or set **CA file** to a PEM CA file. For a homelab CA, export the root certificate from the CA itself (for example Caddy's `pki/authorities/local/root.crt` or step-ca's `certs/root_ca.crt`), or run `openssl s_client -showcerts -connect amp.example.lan:443 </dev/null` and save the last certificate block as a `.pem` file after checking its fingerprint. The URL hostname must match the certificate. Request timeout is configurable from 1 to 300 seconds; the panel's draft connection test is capped at 10 seconds per request and 12 seconds overall.
 
 See CubeCoders' [permission guide](https://discourse.cubecoders.com/t/managing-user-permissions-in-amp/2301) and [template role documentation](https://discourse.cubecoders.com/t/configuring-amp-for-enterprise-or-advanced-usage/1830) for AMP role concepts.

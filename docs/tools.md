@@ -50,7 +50,7 @@ Provisioning uses specifications advertised by AMP. Post-create actions default 
 
 For Fabric, call `amp_setting_read` operation `list` with `query: "Fabric"` and the instance GUID. Read selected values with operation `get`. Refresh deferred version/loader choices through operation `values` with `refresh: true`, then change the exact node with `amp_setting` operation `set`.
 
-Metadata excludes current values. Secret values are redacted and cannot be submitted as plaintext settings. `amp_setting` operation `generate_secret` can generate a writable secret and save it with DPAPI before submission. Enter externally supplied account credentials in AMP. Setting changes do not restart games automatically.
+Metadata excludes current values. Secret values are redacted and cannot be submitted as plaintext settings. `amp_setting` operation `generate_secret` can generate a writable secret and save it encrypted locally (DPAPI on Windows, keyring or vault on Linux) before submission. Enter externally supplied account credentials in AMP. Setting changes do not restart games automatically.
 
 Module actions use three steps:
 

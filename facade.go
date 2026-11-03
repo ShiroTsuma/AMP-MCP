@@ -22,7 +22,7 @@ Grouped tools take an "operation"; the tool description lists what each operatio
 Targeting: ADS is the AMP controller. Tools that act on an instance take instance_id (InstanceID GUID). Where instance_id is optional, omitting it targets ADS itself. amp_instance start/stop controls the whole AMP instance process; amp_application start/stop controls the game inside it.
 Lists return {items,next_offset,more}: pass next_offset as offset while more is true; query filters rows case-insensitively; limit defaults to 50.
 Jobs: every AMP mutation is recorded as a local job and returns {job,result}. A submitted or unknown job is not success. Use amp_job_read operation=get with refresh=true to reconcile it; never repeat a mutation whose outcome is uncertain.
-Secrets: passwords and secret setting values never pass through MCP; generated credentials are saved locally with DPAPI and shown to the human by "amp-mcp show-user-password PATH".`
+Secrets: passwords and secret setting values never pass through MCP; generated credentials are saved locally encrypted (DPAPI on Windows, Secret Service or an encrypted vault on Linux); the human views them with "amp-mcp show-user-password PATH", which opens a local panel. Never run it yourself to read a password.`
 
 type op struct {
 	Name, Tool, Desc string
@@ -63,7 +63,7 @@ var facades = []facade{
 	{Name: "amp_test_connection", Direct: "amp_test_connection", ReadOnly: true, Idempotent: true,
 		Desc: "Check connectivity and authentication for a connection. Returns AMPVersion, APIVersion, ModuleName, LoadedPlugins and FeatureSet. Optional instance_id checks that instance instead of ADS."},
 	{Name: "amp_open_connection_manager", Direct: "amp_open_connection_manager", Idempotent: true,
-		Desc: "Open the local Windows connection manager window so the human can add or edit connections. Returns {window_opened}. Credentials never pass through MCP."},
+		Desc: "Start the local browser connection panel so the human can add, edit, test or delete connections. Returns {url}: a one-time 127.0.0.1 link to give the human (a browser is also opened when possible). Credentials never pass through MCP."},
 	{Name: "amp_instance_read", ReadOnly: true, Idempotent: true,
 		Desc: "Read AMP instances managed by ADS (an instance is one AMP process hosting one application).",
 		Ops: []op{

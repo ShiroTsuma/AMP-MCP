@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>{{.Title}}</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+  <h1>{{.Title}}</h1>
+  {{if ne .Page "closed"}}<form method="post" action="/close"><button class="secondary">Close panel</button></form>{{end}}
+</header>
+<main>
+{{if .Status}}<p class="status{{if .IsError}} error{{end}}" role="status">{{.Status}}</p>{{end}}
+
+{{if eq .Page "closed"}}
+  <p>The configuration panel has stopped. You can close this tab.</p>
+
+{{else if eq .Page "unlock"}}
+  <form method="post" action="/unlock" class="card">
+    <h2>Unlock secret vault</h2>
+    <p class="help">Secrets on this host are kept in an encrypted vault. Enter its passphrase. The first passphrase you enter creates the vault; remember it. Alternatively set <code>MCP_SECRETS_PASSPHRASE</code> for the MCP process.</p>
+    <label for="passphrase">Passphrase</label>
+    <input id="passphrase" name="passphrase" type="password" autocomplete="current-password" required autofocus>
+    <div class="buttons"><button>Unlock</button></div>
+  </form>
+
+{{else if eq .Page "list"}}
+  {{if not .ReadOnly}}<div class="buttons"><a class="button" href="/edit">New</a></div>{{end}}
+  {{if .Records}}
+  <table>
+    <thead><tr>{{range .Columns}}<th scope="col">{{or .Label .Name}}</th>{{end}}<th></th></tr></thead>
+    <tbody>
+    {{range $rec := .Records}}
+      <tr>{{range $.Columns}}<td>{{index $rec .Name}}</td>{{end}}<td><a href="/edit?key={{index $rec $.Key}}">Edit</a></td></tr>
+    {{end}}
+    </tbody>
+  </table>
+  {{else}}<p>No entries yet.</p>{{end}}
+
+{{else if eq .Page "form"}}
+  <p><a href="/">&larr; Back to list</a></p>
+  <form method="post" action="/submit" class="card">
+    <h2>{{if .IsNew}}New entry{{else}}Edit {{.OrigKey}}{{end}}</h2>
+    <input type="hidden" name="_key" value="{{.OrigKey}}">
+    {{range .Fields}}
+    {{$v := index $.Values .Name}}
+    <div class="field">
+      {{if eq .Type "checkbox"}}
+        <label><input type="checkbox" name="{{.Name}}" value="true"{{if $v}} checked{{end}}> {{or .Label .Name}}</label>
+      {{else}}
+        <label for="f-{{.Name}}">{{or .Label .Name}}{{if .Required}} *{{end}}</label>
+        {{if eq .Type "select"}}
+          <select id="f-{{.Name}}" name="{{.Name}}"{{if .Required}} required{{end}}>
+            {{if not .Required}}<option value=""></option>{{end}}
+            {{range .Options}}<option{{if eq . $v}} selected{{end}}>{{.}}</option>{{end}}
+          </select>
+        {{else if eq .Type "password"}}
+          {{$stored := index $.Stored .Name}}
+          <input id="f-{{.Name}}" name="{{.Name}}" type="password" autocomplete="new-password"
+            placeholder="{{if $stored}}stored - leave blank to keep{{else}}not set{{end}}"{{if and .Required (not $stored)}} required{{end}}>
+        {{else}}
+          <input id="f-{{.Name}}" name="{{.Name}}" type="{{if eq .Type "number"}}number{{else}}text{{end}}"{{if eq .Type "number"}} step="any"{{end}} value="{{$v}}"{{if .Required}} required{{end}}{{if $.ReadOnly}} readonly{{end}}>
+        {{end}}
+      {{end}}
+      {{if .Help}}<p class="help">{{.Help}}</p>{{end}}
+    </div>
+    {{end}}
+    <div class="buttons">
+      {{if not .ReadOnly}}<button name="_op" value="save">Save</button>{{end}}
+      {{range .Actions}}<button name="_op" value="action:{{.Name}}" class="secondary">{{or .Label .Name}}</button>{{end}}
+      {{if and .CanDel (not .IsNew)}}<button name="_op" value="delete" class="danger" formnovalidate>Delete</button>{{end}}
+    </div>
+  </form>
+{{end}}
+</main>
+</body>
+</html>

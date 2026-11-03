@@ -161,7 +161,13 @@ func (c *Client) loginLocked(ctx context.Context, scope string) (string, error) 
 	var password string
 	var e error
 	if scope == "" {
-		if c.conn.Password != "" {
+		if c.conn.draft != "" {
+			if c.conn.Password != "" {
+				password = c.conn.draft
+			} else {
+				token = c.conn.draft
+			}
+		} else if c.conn.Password != "" {
 			password, e = decryptToken(c.conn.Password)
 		} else {
 			token, e = decryptToken(c.conn.Token)

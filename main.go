@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
@@ -372,9 +373,9 @@ func internalTools(a *App) registry {
 		sort.Strings(names)
 		return result(names, e), nil
 	})
-	addTool(s, &mcp.Tool{Name: "amp_open_connection_manager", InputSchema: empty}, func(context.Context, *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		e := openManager()
-		return result(map[string]any{"window_opened": e == nil}, e), nil
+	addTool(s, &mcp.Tool{Name: "amp_open_connection_manager", InputSchema: empty}, func(ctx context.Context, _ *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		u, e := openManager(ctx)
+		return result(map[string]any{"url": u, "note": "Give this one-time link to the human; it opens the local connection panel (also attempted automatically). Credentials never pass through MCP."}, e), nil
 	})
 	addExtraTools(s, a)
 	addJobTools(s, a)
@@ -425,16 +426,17 @@ func run() error {
 			return e
 		}
 	case "configure":
-		if e := openManager(); e != nil {
-			return e
-		}
+		return openAndWait(managerConfig())
 	case "version":
 		fmt.Println("amp-mcp " + version)
 	case "show-user-password":
-		if len(os.Args) != 3 {
-			return fmt.Errorf("usage: amp-mcp show-user-password PATH")
+		if len(os.Args) > 3 {
+			return fmt.Errorf("usage: amp-mcp show-user-password [PATH]")
 		}
-		return showUserPassword(os.Args[2])
+		if len(os.Args) == 3 {
+			fmt.Println("In the panel, select " + filepath.Base(os.Args[2]) + " and press Reveal password.")
+		}
+		return openAndWait(credentialsConfig())
 	case "test-connection":
 		if len(os.Args) != 3 {
 			return fmt.Errorf("usage: amp-mcp test-connection NAME")
@@ -454,7 +456,7 @@ func run() error {
 			return fmt.Errorf("connection test failed")
 		}
 	default:
-		return fmt.Errorf("usage: amp-mcp serve|configure|test-connection NAME|show-user-password PATH|version")
+		return fmt.Errorf("usage: amp-mcp serve|configure|test-connection NAME|show-user-password [PATH]|version")
 	}
 	return nil
 }

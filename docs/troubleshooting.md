@@ -2,21 +2,25 @@
 
 ## The client cannot start AMP-MCP
 
-Use an absolute path to the extracted `amp-mcp.exe` with `serve` as its argument. Reconnect the client after configuration changes. AMP-MCP uses stdio, not an HTTP port.
+Use an absolute path to the extracted `amp-mcp.exe` (Windows) or `amp-mcp` (Linux) with `serve` as its argument. Reconnect the client after configuration changes. AMP-MCP uses stdio, not an HTTP port.
 
-Run `amp-mcp.exe version` to check the executable. If Windows blocked the download, inspect its origin and checksum before using Windows' unblock option. Running `serve` manually waits for MCP messages; it is not an interactive console.
+Run `amp-mcp version` to check the executable. On Linux, make sure it is executable (`chmod +x amp-mcp`). If Windows blocked the download, inspect its origin and checksum before using Windows' unblock option. Running `serve` manually waits for MCP messages; it is not an interactive console.
 
 ## No connections are listed
 
-Run `amp-mcp.exe configure` and **Save** a connection; Test does not save. Check that the MCP client runs as the same Windows user and uses the same `AMP_MCP_CONFIG`, if set.
+Run `amp-mcp configure` and **Save** a connection in the panel; Test does not save. Check that the MCP client runs as the same OS user and uses the same `AMP_MCP_CONFIG`, if set.
+
+## The panel link does not open
+
+The link is single-use and the panel stops after 10 idle minutes or **Close panel**; run `amp-mcp configure` again for a new one. Open it in a browser on the same machine. On a remote Linux host, use `ssh -L <port>:127.0.0.1:<port> user@host` with the same port number. If the panel asks for a vault passphrase, enter the one that created `secrets.vault`; a wrong passphrase cannot open stored credentials.
 
 ## Authentication or TLS fails
 
-Use an HTTPS URL and an AMP **Service Login** token for ADS. A normal password is supported only for a bound native instance connection. Replace revoked tokens through the local manager.
+Use an HTTPS URL and an AMP **Service Login** token for ADS. A normal password is supported only for a bound native instance connection. Replace revoked tokens in the connection panel.
 
-Configure a private CA's PEM file or trust it in Windows. The certificate must match the URL hostname. TLS verification cannot be disabled.
+Configure a private CA's PEM file or trust it in the operating system ([how to get a homelab CA](setup.md#connection-storage-and-tls)). The certificate must match the URL hostname. TLS verification cannot be disabled.
 
-DPAPI credentials cannot move to another PC or Windows account. Re-enter them there.
+DPAPI credentials cannot move to another PC or Windows account, and Linux keyring or vault credentials cannot move to another machine or OS. Re-enter them there.
 
 ## ADS works, but the game says permission denied
 
