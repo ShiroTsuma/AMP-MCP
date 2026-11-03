@@ -83,7 +83,11 @@ jobs:
           $archives = @('amp-mcp-windows-x64.zip', 'amp-mcp-linux-x64.tar.gz')
           $sums = foreach ($a in $archives) { (Get-FileHash -LiteralPath $a -Algorithm SHA256).Hash.ToLowerInvariant() + "  $a" }
           [IO.File]::WriteAllText((Join-Path $PWD 'SHA256SUMS'), (($sums | Sort-Object { $_.Substring(66) }) -join "`n") + "`n", [Text.UTF8Encoding]::new($false))
-          $releaseArgs = @('release', 'create', $env:RELEASE_VERSION, '--verify-tag', '--notes-from-tag', '--title', "AMP-MCP $env:RELEASE_VERSION")
+          # Release notes = the annotated tag message, read through the API (this job has no checkout).
+          $ref = gh api "repos/$env:GH_REPO/git/ref/tags/$env:RELEASE_VERSION" | ConvertFrom-Json
+          if ($ref.object.type -ne 'tag') { throw "$env:RELEASE_VERSION must be an annotated tag (git tag -a)." }
+          gh api "repos/$env:GH_REPO/git/tags/$($ref.object.sha)" --jq '.message' | Set-Content -LiteralPath ../notes.md -Encoding utf8
+          $releaseArgs = @('release', 'create', $env:RELEASE_VERSION, '--verify-tag', '--notes-file', '../notes.md', '--title', "AMP-MCP $env:RELEASE_VERSION")
           if ($env:RELEASE_VERSION.Contains('-')) { $releaseArgs += '--prerelease' }
           $releaseArgs += @($archives + 'SHA256SUMS')
           & gh @releaseArgs
